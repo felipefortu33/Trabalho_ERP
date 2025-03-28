@@ -4,8 +4,9 @@ function App() {
   
 
   return (
+   
       <div>
-          <h1>Começaremos em Breve</h1>
+        <h1>Vamos Começar em breve!</h1>
       </div>
       
   )
