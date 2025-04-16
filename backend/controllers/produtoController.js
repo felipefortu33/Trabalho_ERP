@@ -6,11 +6,16 @@ export const getProdutos = async (req, res) => {
 };
 
 export const addProduto = async (req, res) => {
-  const { nome, preco, estoque } = req.body;
+  const { nome, descricao, categoria, preco, estoque } = req.body;
   try {
-    await db.execute('INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)', [nome, preco, estoque]);
+    await db.execute(
+      'INSERT INTO produtos (nome, descricao, categoria, preco, estoque) VALUES (?, ?, ?, ?, ?)',
+      [nome, descricao, categoria, preco, estoque]
+    );
     res.status(201).json({ message: 'Produto adicionado com sucesso!' });
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao adicionar produto' });
+  }catch (error) {
+    console.error('Erro ao adicionar produto:', error); // Adiciona isso
+    res.status(500).json({ error: error.message });     // Mostra o erro real
   }
+
 };

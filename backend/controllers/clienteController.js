@@ -6,9 +6,12 @@ export const getClientes = async (req, res) => {
 };
 
 export const addCliente = async (req, res) => {
-  const { nome, contato } = req.body;
+  const { nome, contato, email, endereco } = req.body;
   try {
-    await db.execute('INSERT INTO clientes (nome, contato) VALUES (?, ?)', [nome, contato]);
+    await db.execute(
+      'INSERT INTO clientes (nome, contato, email, endereco) VALUES (?, ?, ?, ?)',
+      [nome, contato, email, endereco]
+    );
     res.status(201).json({ message: 'Cliente cadastrado com sucesso!' });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao cadastrar cliente' });

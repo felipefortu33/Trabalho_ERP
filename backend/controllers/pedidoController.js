@@ -2,7 +2,7 @@ import db from '../config/db.js';
 
 export const getPedidos = async (req, res) => {
   const [pedidos] = await db.execute(`
-    SELECT p.id, c.nome AS cliente_nome, pr.nome AS produto_nome, p.quantidade, p.data 
+    SELECT p.id, c.nome AS cliente_nome, pr.nome AS produto_nome, p.quantidade, p.data, p.status 
     FROM pedidos p 
     JOIN clientes c ON p.cliente_id = c.id 
     JOIN produtos pr ON p.produto_id = pr.id
@@ -12,7 +12,7 @@ export const getPedidos = async (req, res) => {
 };
 
 export const addPedido = async (req, res) => {
-  const { cliente_id, produto_id, quantidade } = req.body;
+  const { cliente_id, produto_id, quantidade, status } = req.body;
   const data = new Date();
 
   try {
@@ -21,8 +21,10 @@ export const addPedido = async (req, res) => {
       return res.status(400).json({ error: 'Estoque insuficiente para o pedido' });
     }
 
-    await db.execute('INSERT INTO pedidos (cliente_id, produto_id, data, quantidade) VALUES (?, ?, ?, ?)', 
-        [cliente_id, produto_id, data, quantidade]);
+    await db.execute(
+      'INSERT INTO pedidos (cliente_id, produto_id, data, quantidade, status) VALUES (?, ?, ?, ?, ?)', 
+      [cliente_id, produto_id, data, quantidade, status || 'Pendente']
+    );
     
     await db.execute('UPDATE produtos SET estoque = estoque - ? WHERE id = ?', [quantidade, produto_id]);
 
