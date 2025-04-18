@@ -4,11 +4,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Clientes from './pages/Clientes';
 import Produtos from './pages/Produtos';
 import Pedidos from './pages/Pedidos';
-import Cadastro from './pages/Cadastro';
-import Login from './pages/Login';
 import PrivateRoute from './components/PrivateRoute';
 import Sidebar from './components/Sidebar';
-import Topbar from './components/Topbar'; // Novo Topbar importado
+import Topbar from './components/Topbar';
+import AuthPage from './pages/AuthPage'; // Componente unificado
 
 function App() {
   // Wrapper com layout padrão para rotas privadas
@@ -27,8 +26,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/login" element={<AuthPage />} />
+        {/* Se quiser, pode redirecionar /cadastro para /login */}
+        <Route path="/cadastro" element={<AuthPage />} />
 
         <Route
           path="/"
