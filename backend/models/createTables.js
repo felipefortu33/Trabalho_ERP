@@ -27,9 +27,10 @@ const tables = [
       categoria VARCHAR(255),
       preco DECIMAL(10,2) NOT NULL,
       estoque INT NOT NULL,
+      url LONGTEXT,
       data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
       data_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-  )`,
+    )`,
   `CREATE TABLE IF NOT EXISTS pedidos (
       id INT AUTO_INCREMENT PRIMARY KEY,
       cliente_id INT,
@@ -38,8 +39,8 @@ const tables = [
       quantidade INT,
       status VARCHAR(50) DEFAULT 'Pendente',
       data_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      FOREIGN KEY(cliente_id) REFERENCES clientes(id),
-      FOREIGN KEY(produto_id) REFERENCES produtos(id)
+      FOREIGN KEY(cliente_id) REFERENCES clientes(id) ON DELETE CASCADE,
+      FOREIGN KEY(produto_id) REFERENCES produtos(id) ON DELETE CASCADE
   )`
 ];
 
