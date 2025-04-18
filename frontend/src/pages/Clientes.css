@@ -1,0 +1,261 @@
+/* Clientes.css */
+.p-6 {
+    padding: 24px;
+  }
+  
+  h1 {
+    color: #333;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+  
+  .bg-white {
+    background-color: #fff;
+  }
+  
+  .bg-white.rounded {
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Botão "Adicionar Cliente" */
+  button {
+    display: inline-flex;
+    align-items: center;
+    background-color: #d1d5db; /* Cinza claro */
+    color: #333;
+    padding: 6px 12px; /* Tamanho menor */
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px; /* Fonte menor */
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px; /* Espaçamento entre o botão e a tabela */
+    text-transform: uppercase;
+  }
+  
+  button:hover {
+    background-color: #9ca3af; /* Cinza escuro */
+  }
+  
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* Estilizando a tabela */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f3f4f6;
+    color: #555;
+    font-weight: 600;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  td {
+    border-bottom: 1px solid #f1f1f1;
+    color: #666;
+  }
+  
+  tr:hover {
+    background-color: #f9fafb;
+  }
+  
+  tr:last-child td {
+    border-bottom: none;
+  }
+  
+  td .text-blue-600 {
+    color: #007bff;
+    cursor: pointer;
+  }
+  
+  td .text-blue-600:hover {
+    text-decoration: underline;
+  }
+  
+  /* Adicionando uma pequena sombra à tabela */
+  .bg-white.rounded table {
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Estilo do modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  .modal-content h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  input, button {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  input:focus, button:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+  
+  button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    font-weight: 600;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Confirmação de Exclusão (modal) */
+  .modal-content .flex {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .modal-content button {
+    width: 45%;
+  }
+  
+  button.cancel-btn {
+    background-color: #ccc;
+    color: #333;
+  }
+  
+  button.cancel-btn:hover {
+    background-color: #bbb;
+  }
+  
+  /* Responsividade */
+  @media (max-width: 768px) {
+    th, td {
+      padding: 8px;
+    }
+  
+    table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+  
+    .modal-content {
+      width: 90%;
+      padding: 15px;
+    }
+
+    .clientes-container {
+        padding: 24px;
+      }
+      
+      .clientes-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      
+      .clientes-actions {
+        display: flex;
+        gap: 8px;
+      }
+      
+      .clientes-actions input {
+        width: 180px;
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+      
+      .clientes-actions button {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      
+      .clientes-table-container {
+        background-color: #fff;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        overflow-x: auto;
+      }
+      
+      .no-clientes {
+        color: #888;
+        padding: 12px;
+      }
+      
+      .clientes-actions-buttons {
+        display: flex;
+        gap: 6px;
+      }
+      
+      .btn-icon {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #e5e7eb;
+        padding: 6px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      
+      .btn-icon:hover {
+        background-color: #d1d5db;
+      }
+      
+      .btn-icon.editar {
+        color: #007bff;
+      }
+      
+      .btn-icon.excluir {
+        color: #dc2626;
+      }
+      
+      
+  }
+  
