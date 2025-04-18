@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 
 const Login = () => {
@@ -6,6 +7,7 @@ const Login = () => {
     email: '',
     senha: '',
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,6 +20,7 @@ const Login = () => {
       const response = await api.post('/auth/login', formData);
       alert('Login realizado com sucesso!');
       localStorage.setItem('token', response.data.token);
+      navigate('/'); // Redireciona para a página inicial
     } catch (error) {
       console.error('Erro ao fazer login:', error);
       alert('Erro ao realizar login.');

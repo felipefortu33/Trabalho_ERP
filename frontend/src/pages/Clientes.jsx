@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importando useNavigate para redirecionamento
 import api from '../api/axiosConfig';
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
+  const navigate = useNavigate(); // Hook para navegação
 
   useEffect(() => {
+    // Verifica se há um token no localStorage
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login'); // Redireciona para a página de login se não houver token
+      return;
+    }
+
+    // Função para buscar os clientes
     const fetchClientes = async () => {
       try {
         const response = await api.get('/clientes');
@@ -15,7 +25,7 @@ const Clientes = () => {
     };
 
     fetchClientes();
-  }, []);
+  }, [navigate]); // O hook useNavigate é passado na dependência do useEffect
 
   return (
     <div>

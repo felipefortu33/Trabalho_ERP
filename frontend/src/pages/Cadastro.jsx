@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../api/axiosConfig';
+import './Cadastro.css'; 
 
 const Cadastro = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +17,7 @@ const Cadastro = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/auth/register', formData);
+      await api.post('/auth/register', formData);
       alert('Cadastro realizado com sucesso!');
     } catch (error) {
       console.error('Erro ao cadastrar:', error);
@@ -25,9 +26,9 @@ const Cadastro = () => {
   };
 
   return (
-    <div>
+    <div className="cadastro-container">
       <h1>Cadastro</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="cadastro-form">
         <input
           type="text"
           name="nome"
