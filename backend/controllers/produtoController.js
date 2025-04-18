@@ -11,26 +11,30 @@ export const getProdutos = async (req, res) => {
   }
 };
 
+// Função para adicionar um produto
 export const addProduto = async (req, res) => {
   const { nome, descricao, categoria, preco, estoque } = req.body;
-  const imagem = req.file ? req.file.buffer.toString('base64') : null;
+  const url = req.file ? req.file.buffer.toString('base64') : null; // Converte a imagem para base64
 
   try {
     await db.execute(
       'INSERT INTO produtos (nome, descricao, categoria, preco, estoque, url) VALUES (?, ?, ?, ?, ?, ?)',
-      [nome, descricao, categoria, preco, estoque, imagem]
+      [nome, descricao, categoria, parseFloat(preco), parseInt(estoque), url]
     );
     res.status(201).json({ message: 'Produto adicionado com sucesso!' });
   } catch (error) {
+    console.error('Erro ao adicionar produto:', error);
     res.status(500).json({ error: error.message });
   }
 };
 
+// Função para atualizar um produto
 export const updateProduto = async (req, res) => {
   const { id } = req.params;
   const { nome, descricao, categoria, preco, estoque } = req.body;
-  const imagem = req.file ? req.file.filename : null;
+  const url = req.file ? req.file.buffer.toString('base64') : null; // Converte a imagem para base64
 
+  // Validação dos campos obrigatórios
   if (!nome || !descricao || !categoria || preco === undefined || estoque === undefined) {
     return res.status(400).json({ error: "Campos obrigatórios estão faltando" });
   }
@@ -38,7 +42,7 @@ export const updateProduto = async (req, res) => {
   try {
     const query = `
       UPDATE produtos 
-      SET nome = ?, descricao = ?, categoria = ?, preco = ?, estoque = ?, imagem = ? 
+      SET nome = ?, descricao = ?, categoria = ?, preco = ?, estoque = ?, url = ? 
       WHERE id = ?
     `;
 
@@ -46,11 +50,15 @@ export const updateProduto = async (req, res) => {
       nome,
       descricao,
       categoria,
-      parseFloat(preco), // transforma em número
-      parseInt(estoque), // transforma em número
-      imagem,
+      parseFloat(preco), // Converte para número
+      parseInt(estoque), // Converte para número
+      url,
       id
     ]);
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({ message: 'Produto não encontrado' });
+    }
 
     res.status(200).json({ message: "Produto atualizado com sucesso!" });
   } catch (error) {
@@ -59,12 +67,9 @@ export const updateProduto = async (req, res) => {
   }
 };
 
-
-
 // Função para excluir um produto
 export const deleteProduto = async (req, res) => {
-  const { id } = req.params; // Pegando o ID diretamente da URL
-  console.log("Tentando excluir produto com ID:", id); // Logando o ID antes de executar a exclusão
+  const { id } = req.params;
 
   try {
     // Verifica se o ID é válido
@@ -73,9 +78,7 @@ export const deleteProduto = async (req, res) => {
     }
 
     const [result] = await db.execute('DELETE FROM produtos WHERE id = ?', [id]);
-    console.log("Resultado da exclusão:", result); // Logando o resultado da exclusão
 
-    // Verifica se algum produto foi excluído
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Produto não encontrado' });
     }
@@ -90,6 +93,7 @@ export const deleteProduto = async (req, res) => {
 // Função para pesquisar produtos por nome
 export const searchProdutos = async (req, res) => {
   const { nome } = req.query;
+
   try {
     const [result] = await db.execute(
       'SELECT * FROM produtos WHERE nome LIKE ?',
@@ -101,5 +105,3 @@ export const searchProdutos = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-

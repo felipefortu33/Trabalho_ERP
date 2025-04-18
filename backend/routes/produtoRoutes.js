@@ -5,13 +5,11 @@ import upload from '../middlewares/upload.js';
 
 const router = express.Router();
 
-
-
-router.put('/:id', authenticateToken, updateProduto);
-router.delete('/:id', authenticateToken, deleteProduto);
-router.get('/search', authenticateToken, searchProdutos);
-router.post('/', authenticateToken, upload.single('imagem'), addProduto);
-router.put('/:id', authenticateToken, upload.single('imagem'), updateProduto);
-
+// Rotas para produtos
+router.get('/', authenticateToken, getProdutos); // Busca todos os produtos
+router.get('/search', authenticateToken, searchProdutos); // Pesquisa produtos por nome
+router.post('/', authenticateToken, upload.single('imagem'), addProduto); // Adiciona um novo produto
+router.put('/:id', authenticateToken, upload.single('imagem'), updateProduto); // Atualiza um produto
+router.delete('/:id', authenticateToken, deleteProduto); // Exclui um produto
 
 export default router;

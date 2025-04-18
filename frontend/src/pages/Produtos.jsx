@@ -10,12 +10,10 @@ const Produtos = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [newProduto, setNewProduto] = useState({ nome: '', descricao: '', categoria: '', preco: '', estoque: '' });
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Controla o modal de confirmação de exclusão
-  const [produtoToDelete, setProdutoToDelete] = useState(null); // Produto que será excluído
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [produtoToDelete, setProdutoToDelete] = useState(null);
   const [newProdutoImagem, setNewProdutoImagem] = useState(null);
   const [selectedProdutoImagem, setSelectedProdutoImagem] = useState(null);
-
-
 
   useEffect(() => {
     const fetchProdutos = async () => {
@@ -46,6 +44,13 @@ const Produtos = () => {
 
   const handleAddProduto = async (e) => {
     e.preventDefault();
+
+    if (!newProduto.nome || !newProduto.descricao || !newProduto.categoria ||
+      newProduto.preco === '' || newProduto.estoque === '') {
+      alert('Preencha todos os campos obrigatórios.');
+      return;
+    }
+
     try {
       const formData = new FormData();
       for (const key in newProduto) {
@@ -68,92 +73,68 @@ const Produtos = () => {
     }
   };
 
-
   const handleUpdateProduto = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const formData = new FormData();
-  
-  // Adicione apenas os campos necessários
-  const camposEditaveis = ['nome', 'descricao', 'categoria', 'preco', 'estoque'];
-  camposEditaveis.forEach((campo) => {
-    if (selectedProduto[campo] !== undefined && selectedProduto[campo] !== null) {
-      console.log(`Adicionando chave ao formData: ${campo}`);
-      formData.append(campo, selectedProduto[campo]);
+    if (!selectedProduto.nome || !selectedProduto.descricao || !selectedProduto.categoria ||
+      selectedProduto.preco === '' || selectedProduto.estoque === '') {
+      alert('Preencha todos os campos obrigatórios.');
+      return;
     }
-  });
 
-  // Adiciona imagem se tiver
-  if (selectedProdutoImagem) {
-    console.log('Adicionando imagem ao formData');
-    formData.append('imagem', selectedProdutoImagem);
-  } else {
-    console.log('Nenhuma imagem selecionada para atualização');
-  }
-
-  try {
-    const response = await api.put(`/produtos/${selectedProduto.id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    const formData = new FormData();
+    const camposEditaveis = ['nome', 'descricao', 'categoria', 'preco', 'estoque'];
+    camposEditaveis.forEach((campo) => {
+      if (selectedProduto[campo] !== undefined && selectedProduto[campo] !== null) {
+        formData.append(campo, selectedProduto[campo]);
+      }
     });
 
-    console.log('Produto atualizado:', response.data);
-
-    const updated = { ...selectedProduto };
     if (selectedProdutoImagem) {
-      updated.url = URL.createObjectURL(selectedProdutoImagem);
+      formData.append('imagem', selectedProdutoImagem);
     }
 
-    setProdutos(produtos.map(p => p.id === selectedProduto.id ? updated : p));
-    setIsEditModalOpen(false);
-  } catch (error) {
-    console.error('Erro ao atualizar produto:', error);
-  }
-};
+    try {
+      const response = await api.put(`/produtos/${selectedProduto.id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
 
-
-
-
+      console.log('Produto atualizado:', response.data);
+    } catch (error) {
+      console.error('Erro ao atualizar produto:', error);
+    }
+  };
 
   const handleDeleteConfirm = async () => {
     if (!produtoToDelete) return;
-  
+
     try {
-      const response = await api.delete(`/produtos/${produtoToDelete.id}`);
-      console.log(response.data); // Exibindo resposta do backend
+      await api.delete(`/produtos/${produtoToDelete.id}`);
       setProdutos(produtos.filter((produto) => produto.id !== produtoToDelete.id));
-      setIsDeleteModalOpen(false); // Fecha o modal após excluir
+      setIsDeleteModalOpen(false);
     } catch (error) {
       console.error('Erro ao excluir produto:', error);
       alert(`Erro ao excluir produto: ${error.response ? error.response.data.message : error.message}`);
-      setIsDeleteModalOpen(false); // Fecha o modal em caso de erro
+      setIsDeleteModalOpen(false);
     }
   };
-  
 
   const handleDelete = (produto) => {
-    setProdutoToDelete(produto); // Define o produto a ser excluído
-    setIsDeleteModalOpen(true); // Abre o modal de confirmação
+    setProdutoToDelete(produto);
+    setIsDeleteModalOpen(true);
   };
 
   const handleCloseEditModal = () => {
-    // Fecha o modal de edição
     setIsEditModalOpen(false);
-    
-    // Limpa o produto e imagem selecionados
-    setSelectedProduto(null); // Limpa o produto selecionado
-    setSelectedProdutoImagem(null); // Limpa a imagem selecionada
+    setSelectedProduto(null);
+    setSelectedProdutoImagem(null);
   };
 
   const handleCloseAddModal = () => {
-    // Fecha o modal de adição
     setIsAddModalOpen(false);
-    
-    // Limpa o estado do produto e imagem
-    setNewProduto({ nome: '', descricao: '', categoria: '', preco: '', estoque: '' }); // Limpa os campos do novo produto
-    setNewProdutoImagem(null); // Limpa a imagem
+    setNewProduto({ nome: '', descricao: '', categoria: '', preco: '', estoque: '' });
+    setNewProdutoImagem(null);
   };
-  
-  
 
   return (
     <div className="produtos-container">
@@ -197,12 +178,14 @@ const Produtos = () => {
                   <td>{produto.categoria}</td>
                   <td>{produto.preco}</td>
                   <td>{produto.estoque}</td>
-                  <td>
-                    {produto.url && (
-                      <img src={`data:image/jpeg;base64,${produto.url}`} alt={produto.nome} width="250" />
-                    )}
-
-                  </td>
+                  
+                    <td>
+                      {produto.url && (
+                        <img src={`data:image/jpeg;base64,${produto.url}`} alt={produto.nome} width="250" />
+                      )}
+                    </td>
+                    
+                  
                   <td>
                     <button onClick={() => handleEdit(produto)}>
                       <FiEdit />
@@ -259,10 +242,9 @@ const Produtos = () => {
                 accept="image/*"
                 onChange={(e) => setNewProdutoImagem(e.target.files[0])}
               />
-
               <button type="submit">Adicionar</button>
-              <button onClick={handleCloseAddModal}>Cancelar</button>
-              </form>
+              <button type="button" onClick={handleCloseAddModal}>Cancelar</button>
+            </form>
           </div>
         </div>
       )}
@@ -275,31 +257,31 @@ const Produtos = () => {
             <form onSubmit={handleUpdateProduto}>
               <input
                 type="text"
-                placeholder='Nome'
+                placeholder="Nome"
                 value={selectedProduto.nome}
                 onChange={(e) => setSelectedProduto({ ...selectedProduto, nome: e.target.value })}
               />
               <input
                 type="text"
-                placeholder='Descrição'
+                placeholder="Descrição"
                 value={selectedProduto.descricao}
                 onChange={(e) => setSelectedProduto({ ...selectedProduto, descricao: e.target.value })}
               />
               <input
                 type="text"
-                placeholder='Categoria'
+                placeholder="Categoria"
                 value={selectedProduto.categoria}
                 onChange={(e) => setSelectedProduto({ ...selectedProduto, categoria: e.target.value })}
               />
               <input
                 type="number"
-                placeholder='Preço'
+                placeholder="Preço"
                 value={selectedProduto.preco}
                 onChange={(e) => setSelectedProduto({ ...selectedProduto, preco: e.target.value })}
               />
               <input
                 type="number"
-                placeholder='Estoque'
+                placeholder="Estoque"
                 value={selectedProduto.estoque}
                 onChange={(e) => setSelectedProduto({ ...selectedProduto, estoque: e.target.value })}
               />
@@ -308,9 +290,8 @@ const Produtos = () => {
                 accept="image/*"
                 onChange={(e) => setSelectedProdutoImagem(e.target.files[0])}
               />
-
               <button type="submit">Atualizar</button>
-              <button onClick={handleCloseEditModal}>Cancelar</button>
+              <button type="button" onClick={handleCloseEditModal}>Cancelar</button>
             </form>
           </div>
         </div>
@@ -323,7 +304,7 @@ const Produtos = () => {
             <h2>Tem certeza que deseja excluir este produto?</h2>
             <p>{produtoToDelete.nome}</p>
             <button onClick={handleDeleteConfirm}>Sim, excluir</button>
-            <button onClick={() => setIsDeleteModalOpen(false)}>Cancelar</button>
+            <button type="button" onClick={() => setIsDeleteModalOpen(false)}>Cancelar</button>
           </div>
         </div>
       )}
