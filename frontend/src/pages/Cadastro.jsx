@@ -27,14 +27,15 @@ const Cadastro = () => {
 
   return (
     <div className="cadastro-container">
-      <h1>Cadastro</h1>
       <form onSubmit={handleSubmit} className="cadastro-form">
+        <h1>Cadastro</h1>
         <input
           type="text"
           name="nome"
           placeholder="Nome"
           value={formData.nome}
           onChange={handleChange}
+          required
         />
         <input
           type="email"
@@ -42,6 +43,7 @@ const Cadastro = () => {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
+          required
         />
         <input
           type="password"
@@ -49,6 +51,7 @@ const Cadastro = () => {
           placeholder="Senha"
           value={formData.senha}
           onChange={handleChange}
+          required
         />
         <button type="submit">Cadastrar</button>
       </form>
