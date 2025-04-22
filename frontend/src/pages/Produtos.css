@@ -217,6 +217,7 @@ td .text-blue-600:hover {
   border-radius: 6px;
 }
 
+
 /* Responsividade */
 @media (max-width: 768px) {
   th, td {
