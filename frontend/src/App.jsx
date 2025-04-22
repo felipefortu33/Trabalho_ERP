@@ -4,11 +4,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Clientes from './pages/clientes/Clientes.jsx';
 import Produtos from './pages/produtos/Produtos.jsx';
 import Pedidos from './pages/pedidos/Pedidos.jsx';
-import AuthPage from './pages/AuthPage'; // Componente unificado
+import AuthPage from './pages/authPage/AuthPage.jsx'; // Componente unificado
 import PrivateRoute from './components/PrivateRoute';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
-import AdicionarCliente from './pages/AdicionarCliente'; // NOVO IMPORT
+
 
 function App() {
   // Wrapper com layout padrão para rotas privadas
@@ -52,16 +52,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route
-          path="/clientes/novo"
-          element={
-            <PrivateRoute>
-              <AuthenticatedLayout>
-                <AdicionarCliente />
-              </AuthenticatedLayout>
-            </PrivateRoute>
-          }
-        />
+        
         <Route
           path="/produtos"
           element={
