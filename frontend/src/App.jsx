@@ -1,7 +1,7 @@
 // App.jsx
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Clientes from './pages/Clientes';
+import Clientes from './pages/clientes/Clientes.jsx';
 import Produtos from './pages/produtos/Produtos.jsx';
 import Pedidos from './pages/pedidos/Pedidos.jsx';
 import AuthPage from './pages/AuthPage'; // Componente unificado
