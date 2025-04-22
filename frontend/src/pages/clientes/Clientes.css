@@ -1,261 +1,389 @@
-/* Clientes.css */
-.p-6 {
-    padding: 24px;
+/* src/pages/Clientes/Clientes.css */
+.clientes-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
   
-  h1 {
+  .clientes-container h1 {
     color: #333;
-    font-size: 2rem;
-    font-weight: 600;
-  }
-  
-  .bg-white {
-    background-color: #fff;
-  }
-  
-  .bg-white.rounded {
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Botão "Adicionar Cliente" */
-  button {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    background-color: #d1d5db; /* Cinza claro */
-    color: #333;
-    padding: 6px 12px; /* Tamanho menor */
-    border-radius: 6px;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .clientes-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 15px;
+  }
+  
+  .search-box {
+    position: relative;
+    flex-grow: 1;
+  }
+  
+  .search-box .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+  }
+  
+  .search-box input {
+    width: 100%;
+    padding: 10px 10px 10px 35px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .btn-primary {
+    background-color: #4CAF50;
+    color: white;
     border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 14px; /* Fonte menor */
-    transition: background-color 0.3s ease;
-    margin-bottom: 20px; /* Espaçamento entre o botão e a tabela */
-    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
   }
   
-  button:hover {
-    background-color: #9ca3af; /* Cinza escuro */
+  .btn-primary:hover {
+    background-color: #45a049;
   }
   
-  button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  .clientes-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow-x: auto;
   }
   
-  /* Estilizando a tabela */
   table {
     width: 100%;
     border-collapse: collapse;
   }
   
   th, td {
-    padding: 12px 16px;
+    padding: 12px 15px;
     text-align: left;
+    border-bottom: 1px solid #ddd;
   }
   
   th {
-    background-color: #f3f4f6;
-    color: #555;
+    background-color: #f8f9fa;
     font-weight: 600;
-    border-bottom: 2px solid #ddd;
-  }
-  
-  td {
-    border-bottom: 1px solid #f1f1f1;
-    color: #666;
   }
   
   tr:hover {
-    background-color: #f9fafb;
+    background-color: #f5f5f5;
   }
   
-  tr:last-child td {
-    border-bottom: none;
+  .action-buttons {
+    display: flex;
+    gap: 5px;
   }
   
-  td .text-blue-600 {
-    color: #007bff;
+  .btn-edit {
+    background-color: #FFC107;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 4px;
     cursor: pointer;
   }
   
-  td .text-blue-600:hover {
-    text-decoration: underline;
+  .btn-edit:hover {
+    background-color: #e0a800;
   }
   
-  /* Adicionando uma pequena sombra à tabela */
-  .bg-white.rounded table {
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  .btn-delete {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
   }
   
-  /* Estilo do modal */
+  .btn-delete:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* Modal Styles */
   .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
   }
   
   .modal-content {
-    background-color: #fff;
-    padding: 20px;
+    background: white;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 400px;
-    animation: fadeIn 0.3s ease-in-out;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   }
   
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  
-  .modal-content h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #333;
-  }
-  
-  input, button {
-    width: 100%;
-    padding: 8px;
-    margin: 8px 0;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  }
-  
-  input:focus, button:focus {
-    outline: none;
-    border-color: #007bff;
-  }
-  
-  button[type="submit"] {
-    background-color: #007bff;
-    color: white;
-    font-weight: 600;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Confirmação de Exclusão (modal) */
-  .modal-content .flex {
+  .modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
     display: flex;
     justify-content: space-between;
+    align-items: center;
   }
   
-  .modal-content button {
-    width: 45%;
+  .modal-header h2 {
+    margin: 0;
+    font-size: 20px;
   }
   
-  button.cancel-btn {
-    background-color: #ccc;
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .close-btn:hover {
     color: #333;
   }
   
-  button.cancel-btn:hover {
-    background-color: #bbb;
+  form {
+    padding: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .no-clientes {
+    color: #666;
+    font-style: italic;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Botão de cancelar nos modais */
+  .btn-cancel {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-cancel:hover {
+    background-color: #d32f2f;
+  }
+
+  .clientes-actions-buttons {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .btn-icon {
+    background: none;
+    border: none;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-icon.editar {
+    color: #FFC107;
+    background-color: rgba(255, 193, 7, 0.1);
+  }
+  
+  .btn-icon.excluir {
+    color: #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+  }
+  
+  .btn-icon:hover {
+    opacity: 0.8;
+  }
+  
+  .btn-excluir {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .btn-excluir:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* Ajuste para o formulário */
+  form {
+    padding: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .form-actions button {
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .form-actions button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+  }
+  
+  .form-actions button[type="button"] {
+    background-color: #f44336;
+    color: white;
+    border: none;
+  }
+
+  .btn-search {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .btn-search:hover {
+    background-color: #0b7dda;
+  }
+
+  /* Botões padrão */
+.btn {
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: #45a049;
+  }
+  
+  .btn-secondary {
+    background-color: #2196F3;
+    color: white;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #0b7dda;
+  }
+  
+  .btn-danger {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .btn-danger:hover {
+    background-color: #d32f2f;
+  }
+  
+  .btn-warning {
+    background-color: #FFC107;
+    color: #333;
+  }
+  
+  .btn-warning:hover {
+    background-color: #e0a800;
   }
   
   /* Responsividade */
   @media (max-width: 768px) {
-    th, td {
-      padding: 8px;
+    .clientes-actions {
+      flex-direction: column;
     }
-  
-    table {
-      display: block;
-      overflow-x: auto;
-      white-space: nowrap;
+    
+    .search-box {
+      width: 100%;
     }
-  
+    
     .modal-content {
-      width: 90%;
-      padding: 15px;
+      width: 95%;
+      padding: 10px;
     }
-
-    .clientes-container {
-        padding: 24px;
-      }
-      
-      .clientes-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-      }
-      
-      .clientes-actions {
-        display: flex;
-        gap: 8px;
-      }
-      
-      .clientes-actions input {
-        width: 180px;
-        padding: 6px 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-      }
-      
-      .clientes-actions button {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-      }
-      
-      .clientes-table-container {
-        background-color: #fff;
-        padding: 16px;
-        border-radius: 8px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-        overflow-x: auto;
-      }
-      
-      .no-clientes {
-        color: #888;
-        padding: 12px;
-      }
-      
-      .clientes-actions-buttons {
-        display: flex;
-        gap: 6px;
-      }
-      
-      .btn-icon {
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #e5e7eb;
-        padding: 6px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-      
-      .btn-icon:hover {
-        background-color: #d1d5db;
-      }
-      
-      .btn-icon.editar {
-        color: #007bff;
-      }
-      
-      .btn-icon.excluir {
-        color: #dc2626;
-      }
-      
-      
+    
+    th, td {
+      padding: 8px 10px;
+      font-size: 14px;
+    }
   }
-  

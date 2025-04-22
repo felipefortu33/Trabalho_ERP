@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { FiX, FiSearch } from 'react-icons/fi';
 import PedidoForm from './PedidoForm';
+import api from '../../../api/axiosConfig';
 
 const PedidoModal = ({ isOpen, onClose, clientes, produtos, fetchDados }) => {
   const [produtoBuscaTermo, setProdutoBuscaTermo] = useState('');

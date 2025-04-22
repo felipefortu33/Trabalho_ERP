@@ -24,7 +24,7 @@ const ClienteList = ({ clientes, onEdit, onDelete }) => {
                 <td>{cliente.contato}</td>
                 <td>{cliente.email}</td>
                 <td>{cliente.endereco}</td>
-                <td className="clientes-actions-buttons">
+                <td className="actions-buttons">
                   <button
                     className="btn-icon editar"
                     onClick={() => onEdit(cliente)}
