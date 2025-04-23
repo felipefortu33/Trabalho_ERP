@@ -87,6 +87,7 @@ export const addPedido = async (req, res) => {
 
 export const updatePedido = async (req, res) => {
   const { id } = req.params;
+  console.log('Requisição recebida no updatePedido:', req.body);
   const { cliente_id, status, produto_id, quantidade, atualizacao_completa } = req.body;
 
   const conn = await db.getConnection();
@@ -114,6 +115,12 @@ export const updatePedido = async (req, res) => {
       );
 
       for (const item of produtosPedido) {
+        const [produto] = await conn.execute('SELECT estoque FROM produtos WHERE id = ?', [item.produto_id]);
+
+        if (produto[0].estoque < item.quantidade) {
+          throw new Error(`Estoque insuficiente para o produto ${item.produto_id}`);
+        }
+
         await conn.execute(
           'UPDATE produtos SET estoque = estoque - ? WHERE id = ?',
           [item.quantidade, item.produto_id]
@@ -144,12 +151,6 @@ export const updatePedido = async (req, res) => {
         'UPDATE pedidos SET estoque_baixado = FALSE WHERE id = ?',
         [id]
       );
-    }
-
-    // 4. Para API antiga - atualizar produto principal se necessário
-    if (!atualizacao_completa && produto_id && quantidade) {
-      // Lógica para atualização do produto principal (versão antiga)
-      // ... (manter compatibilidade com versão anterior se necessário)
     }
 
     await conn.commit();

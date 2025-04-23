@@ -7,6 +7,7 @@ import Pedidos from './pages/pedidos/Pedidos.jsx';
 import AuthPage from './pages/authPage/AuthPage.jsx'; // Componente unificado
 import PrivateRoute from './components/PrivateRoute';
 import Dashboard from './pages/dashboard/Dashboard';
+import Financeiro from './pages/financeiro/Financeiro.jsx';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 
@@ -43,6 +44,16 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/financeiro"
+          element={
+            <PrivateRoute>
+              <AuthenticatedLayout>
+                <Financeiro />
+              </AuthenticatedLayout>
+            </PrivateRoute>
+          }
+          />
         <Route
           path="/dashboard"
           element={

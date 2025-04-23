@@ -1,0 +1,138 @@
+/* Financeiro.css */
+.financeiro-container {
+    padding: 20px;
+  }
+  
+  .financeiro-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .financeiro-tabs button {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 5px;
+    border-bottom: 3px solid transparent;
+  }
+  
+  .financeiro-tabs button.active {
+    border-bottom: 3px solid #4e73df;
+    font-weight: bold;
+  }
+  
+  .resumo-financeiro {
+    margin-top: 20px;
+  }
+  
+  .resumo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .resumo-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  
+  .resumo-card .icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .resumo-card .receita {
+    color: #1cc88a;
+  }
+  
+  .resumo-card .despesa {
+    color: #e74a3b;
+  }
+  
+  .resumo-card .receber {
+    color: #4e73df;
+  }
+  
+  .resumo-card .pagar {
+    color: #f6c23e;
+  }
+  
+  /* Estilos para tabelas */
+  .contas-container, .fluxo-caixa-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .contas-header, .fluxo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .contas-table, .fluxo-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .contas-table th, .fluxo-table th {
+    background: #f8f9fc;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  .contas-table td, .fluxo-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  
+  .status-badge.pendente {
+    background: #f6c23e;
+    color: #fff;
+  }
+  
+  .status-badge.pago {
+    background: #1cc88a;
+    color: #fff;
+  }
+  
+  .status-badge.atrasado {
+    background: #e74a3b;
+    color: #fff;
+  }
+  
+  .btn-pagar {
+    background: #4e73df;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-pagar:hover {
+    background: #2e59d9;
+  }
+  
+  .tipo-entrada {
+    color: #1cc88a;
+  }
+  
+  .tipo-saida {
+    color: #e74a3b;
+  }

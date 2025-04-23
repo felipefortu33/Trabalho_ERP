@@ -25,6 +25,9 @@ const Sidebar = () => {
         <li>
           <Link to="/dashboard">📊 Dashboard</Link>
           </li>
+          <li>
+            <Link to="/financeiro">💰 Financeiro</Link>
+          </li>
         <li onClick={handleLogout} className="logout">
           🚪 Sair
         </li>

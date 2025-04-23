@@ -1,4 +1,3 @@
-// src/pages/Pedidos/components/EditPedidoModal.jsx
 import React, { useState } from 'react';
 import { FiX } from 'react-icons/fi';
 import api from '../../../api/axiosConfig';
@@ -7,48 +6,24 @@ const EditPedidoModal = ({ isOpen, onClose, pedido, clientes, fetchDados }) => {
   const [pedidoEditando, setPedidoEditando] = useState(pedido);
 
   const handleUpdatePedido = async (e) => {
-    e.preventDefault();
-    
-    if (!pedidoEditando.produtos || pedidoEditando.produtos.length === 0) {
-      alert('O pedido deve ter pelo menos um produto');
-      return;
-    }
-  
+    e.preventDefault(); // Adicionado para prevenir comportamento padrão do formulário
     try {
-      const dadosAtualizacao = {
-        cliente_id: pedidoEditando.cliente.id,
+      const updatedPedido = {
+        cliente_id: pedidoEditando.cliente.id, // Corrigido para acessar o estado local
         status: pedidoEditando.status,
-        produto_id: pedidoEditando.produtos[0].produto_id,
-        quantidade: pedidoEditando.produtos[0].quantidade,
-        atualizacao_completa: true
+        atualizacao_completa: true // Adicionado para indicar que é uma atualização completa
       };
-  
-      const response = await api.put(`/pedidos/${pedidoEditando.id}`, dadosAtualizacao);
-      
+
+      const response = await api.put(`/pedidos/${pedidoEditando.id}`, updatedPedido);
+
       if (response.data.message) {
-        let mensagem = 'Pedido atualizado com sucesso!';
-        
-        if (response.data.estoque_atualizado) {
-          mensagem += `\nEstoque atualizado (Status: ${pedidoEditando.status})`;
-        }
-        
-        alert(mensagem);
+        alert('Pedido atualizado com sucesso!');
+        fetchDados();
+        onClose(); // Fechar o modal após sucesso
       }
-  
-      onClose();
-      fetchDados();
-      
     } catch (error) {
-      console.error('Erro detalhado na atualização:', {
-        error: error.response?.data || error.message,
-        pedido: pedidoEditando
-      });
-      
-      const mensagemErro = error.response?.data?.error || 
-                        error.response?.data?.message || 
-                        'Erro ao atualizar pedido';
-      
-      alert(`Erro: ${mensagemErro}`);
+      console.error('Erro detalhado na atualização:', error.response?.data || error.message);
+      alert(`Erro ao atualizar pedido: ${error.response?.data?.error || error.message}`);
     }
   };
 
@@ -71,7 +46,7 @@ const EditPedidoModal = ({ isOpen, onClose, pedido, clientes, fetchDados }) => {
         </div>
         
         <form onSubmit={handleUpdatePedido}>
-          <div className="form-group">
+        <div className="form-group">
             <label>Cliente</label>
             <select
               value={pedidoEditando.cliente.id}
