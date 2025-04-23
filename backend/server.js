@@ -7,6 +7,8 @@ import clienteRoutes from './routes/clienteRoutes.js';
 import produtoRoutes from './routes/produtoRoutes.js';
 import pedidoRoutes from './routes/pedidoRoutes.js';
 import { createTables } from './models/createTables.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import { authenticateToken } from './middlewares/authenticateToken.js';
 import setupSwagger from './swagger.js';
 
 const app = express();
@@ -23,6 +25,7 @@ app.use('/auth', authRoutes);
 app.use('/clientes', clienteRoutes);
 app.use('/produtos', produtoRoutes);
 app.use('/pedidos', pedidoRoutes);
+app.use('/dashboard', authenticateToken, dashboardRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);

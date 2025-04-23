@@ -6,6 +6,7 @@ import Produtos from './pages/produtos/Produtos.jsx';
 import Pedidos from './pages/pedidos/Pedidos.jsx';
 import AuthPage from './pages/authPage/AuthPage.jsx'; // Componente unificado
 import PrivateRoute from './components/PrivateRoute';
+import Dashboard from './pages/dashboard/Dashboard';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 
@@ -38,6 +39,16 @@ function App() {
             <PrivateRoute>
               <AuthenticatedLayout>
                 <h1>Bem-vindo ao ERP</h1>
+              </AuthenticatedLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <AuthenticatedLayout>
+                <Dashboard />
               </AuthenticatedLayout>
             </PrivateRoute>
           }

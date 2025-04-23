@@ -25,7 +25,7 @@ const Auth = () => {
         });
         localStorage.setItem('token', res.data.token);
         alert('Login realizado com sucesso!');
-        navigate('/');
+        navigate('/dashboard');
       } else {
         await api.post('/auth/register', formData);
         alert('Cadastro realizado com sucesso!');
