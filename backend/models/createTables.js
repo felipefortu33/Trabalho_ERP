@@ -69,7 +69,8 @@ const tables = [
   data_pagamento DATE,
   status ENUM('pendente', 'pago', 'atrasado') DEFAULT 'pendente',
   fornecedor VARCHAR(255),
-  categoria VARCHAR(100)
+  categoria VARCHAR(100),
+  forma_pagamento VARCHAR(50)
 )`,
 
 `CREATE TABLE IF NOT EXISTS fluxo_caixa (
@@ -99,6 +100,13 @@ id INT AUTO_INCREMENT PRIMARY KEY,
   descricao TEXT,
   data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE SET NULL
+)`,
+`CREATE TABLE IF NOT EXISTS receitas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  pedido_id INT NOT NULL,
+  valor DECIMAL(10,2) NOT NULL,
+  data DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (pedido_id) REFERENCES pedidos(id)
 )`
 ];
 

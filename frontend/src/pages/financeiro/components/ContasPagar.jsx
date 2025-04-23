@@ -53,7 +53,7 @@ const ContasPagar = () => {
             <tr key={conta.id} className={`status-${conta.status}`}>
               <td>{conta.fornecedor_nome || 'N/A'}</td>
               <td>{conta.referencia || 'N/A'}</td>
-              <td>R$ {conta.valor.toFixed(2)}</td>
+              <td>R$ {Number(conta.valor).toFixed(2)}</td>
               <td>{new Date(conta.data_vencimento).toLocaleDateString()}</td>
               <td>
                 <span className={`status-badge ${conta.status}`}>

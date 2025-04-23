@@ -86,27 +86,45 @@ export const createContaPagar = async (req, res) => {
 };
 
 export const registrarPagamentoPagar = async (req, res) => {
-  const { id } = req.params;
-  const { data_pagamento, forma_pagamento } = req.body;
+    const { id } = req.params;
+    const { data_pagamento, forma_pagamento } = req.body;
   
-  try {
-    await db.execute(
-      'UPDATE contas_pagar SET status = "pago", data_pagamento = ?, forma_pagamento = ? WHERE id = ?',
-      [data_pagamento, forma_pagamento, id]
-    );
-    
-    // Registrar no fluxo de caixa
-    const [conta] = await db.execute('SELECT valor FROM contas_pagar WHERE id = ?', [id]);
-    await db.execute(
-      'INSERT INTO fluxo_caixa (tipo, valor, data, descricao, categoria, referencia_id, referencia_tipo) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      ['saida', conta[0].valor, data_pagamento, 'Pagamento de conta', 'pagamento', id, 'conta_pagar']
-    );
-    
-    res.json({ message: 'Pagamento registrado com sucesso' });
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao registrar pagamento' });
-  }
-};
+    try {
+      console.log('🔄 Registrando pagamento da conta ID:', id);
+      console.log('📦 Dados recebidos:', { data_pagamento, forma_pagamento });
+  
+      // Atualiza a conta como paga
+      const updateResult = await db.execute(
+        'UPDATE contas_pagar SET status = "pago", data_pagamento = ?, forma_pagamento = ? WHERE id = ?',
+        [data_pagamento, forma_pagamento, id]
+      );
+  
+      // Busca o valor da conta
+      const [conta] = await db.execute('SELECT valor FROM contas_pagar WHERE id = ?', [id]);
+  
+      if (!conta || conta.length === 0) {
+        return res.status(404).json({ error: 'Conta não encontrada' });
+      }
+  
+      const valor = parseFloat(conta[0].valor);
+  
+      if (isNaN(valor)) {
+        return res.status(400).json({ error: 'Valor da conta inválido' });
+      }
+  
+      // Registra no fluxo de caixa
+      await db.execute(
+        'INSERT INTO fluxo_caixa (tipo, valor, data, descricao, categoria, referencia_id, referencia_tipo) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        ['saida', valor, data_pagamento, 'Pagamento de conta', 'pagamento', id, 'conta_pagar']
+      );
+  
+      res.json({ message: 'Pagamento registrado com sucesso' });
+    } catch (error) {
+      console.error('❌ Erro interno em registrarPagamentoPagar:', error);
+      res.status(500).json({ error: 'Erro ao registrar pagamento', detalhe: error.message });
+    }
+  };
+  
 
 // Fluxo de Caixa
 export const getFluxoCaixa = async (req, res) => {
@@ -132,22 +150,35 @@ export const getFluxoCaixa = async (req, res) => {
 
 // Relatórios Financeiros
 export const getResumoFinanceiro = async (req, res) => {
+    const conn = await db.getConnection();
     try {
-      const resultados = await Promise.all([
-        db.execute('SELECT SUM(valor) as total FROM contas_receber WHERE status = "pago" AND MONTH(data_pagamento) = MONTH(CURRENT_DATE())'),
-        db.execute('SELECT SUM(valor) as total FROM contas_pagar WHERE status = "pago" AND MONTH(data_pagamento) = MONTH(CURRENT_DATE())'),
-        db.execute('SELECT SUM(valor) as total FROM contas_receber WHERE status = "pendente"'),
-        db.execute('SELECT SUM(valor) as total FROM contas_pagar WHERE status = "pendente"')
+      const [
+        [contasRecebidas], 
+        [contasPagas], 
+        [contasReceberPendentes], 
+        [contasPagarPendentes], 
+        [receitasMes]
+      ] = await Promise.all([
+        conn.execute(`SELECT SUM(valor) AS total FROM contas_receber WHERE status = "pago" AND MONTH(data_pagamento) = MONTH(CURRENT_DATE()) AND YEAR(data_pagamento) = YEAR(CURRENT_DATE())`),
+        conn.execute(`SELECT SUM(valor) AS total FROM contas_pagar WHERE status = "pago" AND MONTH(data_pagamento) = MONTH(CURRENT_DATE()) AND YEAR(data_pagamento) = YEAR(CURRENT_DATE())`),
+        conn.execute(`SELECT SUM(valor) AS total FROM contas_receber WHERE status = "pendente"`),
+        conn.execute(`SELECT SUM(valor) AS total FROM contas_pagar WHERE status = "pendente"`),
+        conn.execute(`SELECT SUM(valor) AS total FROM receitas WHERE MONTH(data) = MONTH(CURRENT_DATE()) AND YEAR(data) = YEAR(CURRENT_DATE())`)
       ]);
-      
+  
       res.json({
-        recebimentosMes: resultados[0][0][0].total || 0,
-        pagamentosMes: resultados[1][0][0].total || 0,
-        contasReceberPendentes: resultados[2][0][0].total || 0,
-        contasPagarPendentes: resultados[3][0][0].total || 0
+        recebimentosMes: parseFloat(receitasMes[0]?.total || 0),
+        pagamentosMes: parseFloat(contasPagas[0]?.total || 0),
+        contasReceberPendentes: parseFloat(contasReceberPendentes[0]?.total || 0),
+        contasPagarPendentes: parseFloat(contasPagarPendentes[0]?.total || 0)
       });
+  
     } catch (error) {
-      console.error('Erro detalhado:', error);
+      console.error('Erro ao gerar resumo financeiro:', error);
       res.status(500).json({ error: 'Erro ao gerar resumo financeiro', details: error.message });
+    } finally {
+      conn.release();
     }
   };
+  
+  

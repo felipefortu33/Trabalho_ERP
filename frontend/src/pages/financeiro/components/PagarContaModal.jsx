@@ -32,7 +32,7 @@ const PagarContaModal = ({ isOpen, onClose, conta, tipo, onSuccess }) => {
         <h2>Registrar Pagamento</h2>
         <form onSubmit={handleSubmit} className="modal-form">
           <p><strong>Descrição:</strong> {conta.descricao || conta.referencia}</p>
-          <p><strong>Valor:</strong> R$ {conta.valor.toFixed(2)}</p>
+          <p><strong>Valor:</strong> R$ {Number(conta.valor).toFixed(2)}</p>
 
           <label>Data do Pagamento</label>
           <input

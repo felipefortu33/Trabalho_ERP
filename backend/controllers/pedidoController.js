@@ -108,7 +108,6 @@ export const updatePedido = async (req, res) => {
 
     // 3. Lógica de atualização de estoque baseada no status
     if (status === 'Concluído' && !pedidoAtual.estoque_baixado) {
-      // Se mudou para Concluído e o estoque ainda não foi baixado
       const [produtosPedido] = await conn.execute(
         'SELECT produto_id, quantidade FROM pedido_produtos WHERE pedido_id = ?',
         [id]
@@ -127,13 +126,39 @@ export const updatePedido = async (req, res) => {
         );
       }
 
-      // Marcar que o estoque foi baixado
       await conn.execute(
         'UPDATE pedidos SET estoque_baixado = TRUE WHERE id = ?',
         [id]
       );
+
+      // 4. Registrar receita apenas se ainda não foi integrada
+      const [[jaRegistrado]] = await conn.execute(
+        'SELECT 1 FROM receitas WHERE pedido_id = ? LIMIT 1',
+        [id]
+      );
+
+      if (!jaRegistrado) {
+        const [itens] = await conn.execute(`
+          SELECT pr.preco, pp.quantidade
+          FROM pedido_produtos pp
+          JOIN produtos pr ON pp.produto_id = pr.id
+          WHERE pp.pedido_id = ?
+        `, [id]);
+
+        const totalPedido = itens.reduce((soma, item) => soma + (item.preco * item.quantidade), 0);
+
+        await conn.execute(
+          'INSERT INTO receitas (pedido_id, valor) VALUES (?, ?)',
+          [id, totalPedido]
+        );
+
+        await conn.execute(
+          'UPDATE pedidos SET financeiro_integrado = TRUE WHERE id = ?',
+          [id]
+        );
+      }
+
     } else if (['Cancelado', 'Pendente'].includes(status) && pedidoAtual.estoque_baixado) {
-      // Se mudou para Cancelado/Pendente e o estoque estava baixado
       const [produtosPedido] = await conn.execute(
         'SELECT produto_id, quantidade FROM pedido_produtos WHERE pedido_id = ?',
         [id]
@@ -146,7 +171,6 @@ export const updatePedido = async (req, res) => {
         );
       }
 
-      // Marcar que o estoque foi devolvido
       await conn.execute(
         'UPDATE pedidos SET estoque_baixado = FALSE WHERE id = ?',
         [id]
@@ -169,6 +193,7 @@ export const updatePedido = async (req, res) => {
     conn.release();
   }
 };
+
 
 
 export const deletePedido = async (req, res) => {

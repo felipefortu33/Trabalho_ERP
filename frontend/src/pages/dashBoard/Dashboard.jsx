@@ -75,7 +75,7 @@ const Dashboard = () => {
         <StatCard 
           icon={<FiDollarSign size={24} />}
           title="Vendas (Mês)"
-          value={`R$ ${stats.vendasMes.toFixed(2)}`}
+          value={`R$ ${Number(stats.vendasMes || 0).toFixed(2)}`}
           color="#f6c23e"
         />
         <StatCard 

@@ -68,7 +68,7 @@ const FluxoCaixa = () => {
               <td>{new Date(item.data).toLocaleDateString()}</td>
               <td>{item.tipo === 'entrada' ? 'Entrada' : 'Saída'}</td>
               <td>{item.descricao}</td>
-              <td>R$ {item.valor.toFixed(2)}</td>
+              <td>R$ {Number(item.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
               <td>{item.categoria}</td>
             </tr>
           ))}
