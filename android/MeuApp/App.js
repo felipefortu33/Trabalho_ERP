@@ -3,8 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import AuthScreen from './src/screens/AuthScreen';
-import HomeScreen from './src/screens/HomeScreen';
-// Futuramente: import DashboardScreen from './src/screens/DashboardScreen';
+import MainLayout from './src/navigation/MainLayout'; // <-- IMPORTA MainLayout
 
 const Stack = createStackNavigator();
 
@@ -13,9 +12,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Auth" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Auth" component={AuthScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        {/* Quando criar o DashboardScreen, adicione aqui: */}
-        {/* <Stack.Screen name="Dashboard" component={DashboardScreen} /> */}
+        <Stack.Screen name="Main" component={MainLayout} />
       </Stack.Navigator>
     </NavigationContainer>
   );

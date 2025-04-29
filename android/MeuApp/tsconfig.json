@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "index.js"  ]
+, "index.js", "src/components/produtos/AddProdutoModal.js", "src/components/produtos/ProdutoForm.js", "src/components/produtos/EditProdutoModal.js", "src/components/produtos/DeleteProdutoModal.js", "src/components/produtos/ProdutoList.js"  ]
 }

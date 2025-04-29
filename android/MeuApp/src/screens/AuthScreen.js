@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../api/axiosConfig'; // certifique que o caminho está correto
+import api from '../api/axiosConfig';
 import { useNavigation } from '@react-navigation/native';
 
 const AuthScreen = () => {
@@ -22,7 +22,7 @@ const AuthScreen = () => {
         });
         await AsyncStorage.setItem('token', res.data.token);
         Alert.alert('Sucesso', 'Login realizado com sucesso!');
-        navigation.navigate('Home'); // Redireciona para a tela principal (ajuste conforme suas rotas)
+        navigation.replace('Main'); // <- corrigido para navegar para o Drawer
       } else {
         await api.post('/auth/register', formData);
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
