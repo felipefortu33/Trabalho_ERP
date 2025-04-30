@@ -8,6 +8,8 @@ import api from '../api/axiosConfig';
 
 const PedidosScreen = () => {
   const [pedidos, setPedidos] = useState([]);
+  const [clientes, setClientes] = useState([]);
+  const [produtos, setProdutos] = useState([]);
   const [isAddVisible, setIsAddVisible] = useState(false);
   const [pedidoEditando, setPedidoEditando] = useState(null);
   const [pedidoParaExcluir, setPedidoParaExcluir] = useState(null);
@@ -21,8 +23,28 @@ const PedidosScreen = () => {
     }
   };
 
+  const fetchClientes = async () => {
+    try {
+      const response = await api.get('/clientes');
+      setClientes(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error);
+    }
+  };
+
+  const fetchProdutos = async () => {
+    try {
+      const response = await api.get('/produtos');
+      setProdutos(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar produtos:', error);
+    }
+  };
+
   useEffect(() => {
     fetchPedidos();
+    fetchClientes();
+    fetchProdutos();
   }, []);
 
   return (
@@ -45,9 +67,28 @@ const PedidosScreen = () => {
         <Text style={styles.addButtonText}>Novo Pedido</Text>
       </TouchableOpacity>
 
-      <AddPedidoModal visible={isAddVisible} onClose={() => setIsAddVisible(false)} onRefresh={fetchPedidos} />
-      <EditPedidoModal pedido={pedidoEditando} onClose={() => setPedidoEditando(null)} onRefresh={fetchPedidos} />
-      <DeletePedidoModal pedido={pedidoParaExcluir} onClose={() => setPedidoParaExcluir(null)} onConfirm={fetchPedidos} />
+      <AddPedidoModal
+        visible={isAddVisible}
+        onClose={() => setIsAddVisible(false)}
+        onRefresh={fetchPedidos}
+        clientes={clientes}
+        produtos={produtos}
+      />
+
+<EditPedidoModal
+  visible={!!pedidoEditando}
+  pedido={pedidoEditando}
+  onClose={() => setPedidoEditando(null)}
+  onRefresh={fetchPedidos}
+  clientes={clientes}
+  produtosDisponiveis={produtos} // Adicionado esta linha
+/>
+
+      <DeletePedidoModal
+        pedido={pedidoParaExcluir}
+        onClose={() => setPedidoParaExcluir(null)}
+        onConfirm={fetchPedidos}
+      />
     </View>
   );
 };
