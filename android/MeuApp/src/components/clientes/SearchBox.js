@@ -1,22 +1,65 @@
 // src/components/clientes/SearchBox.js
-import React from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { Feather } from '@expo/vector-icons'; // Para o ícone de lupa
+import React, { useState } from 'react';
+import { View, TextInput, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, borderRadius, shadows } from '../../utils/colors';
 
-const SearchBox = ({ searchTerm, setSearchTerm, onSearch, placeholder }) => {
+const SearchBox = ({ searchTerm, setSearchTerm, onSearch, placeholder, style }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleTextChange = (text) => {
+    setSearchTerm(text);
+    // Busca em tempo real conforme digita
+    if (onSearch) {
+      onSearch(text);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+    if (onSearch) {
+      onSearch('');
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-        returnKeyType="search"
-        onSubmitEditing={onSearch}
-      />
-      <TouchableOpacity style={styles.searchButton} onPress={onSearch}>
-        <Feather name="search" size={20} color="#fff" />
-      </TouchableOpacity>
+    <View style={[styles.container, style]}>
+      <View style={[
+        styles.inputContainer, 
+        isFocused && styles.inputContainerFocused
+      ]}>
+        <Ionicons 
+          name="search-outline" 
+          size={20} 
+          color={isFocused ? colors.primary : colors.textSecondary} 
+          style={styles.searchIcon}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          placeholderTextColor={colors.textSecondary}
+          value={searchTerm}
+          onChangeText={handleTextChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          returnKeyType="search"
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+        {searchTerm.length > 0 && (
+          <TouchableOpacity 
+            style={styles.clearButton} 
+            onPress={clearSearch}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons 
+              name="close-circle" 
+              size={20} 
+              color={colors.textSecondary} 
+            />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -25,26 +68,35 @@ export default SearchBox;
 
 const styles = StyleSheet.create({
   container: {
+    marginVertical: spacing.sm,
+  },
+  inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    gap: 8,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.md,
+    minHeight: 48,
+    ...shadows.sm,
+  },
+  inputContainerFocused: {
+    borderColor: colors.primary,
+    shadowColor: colors.primary,
+    shadowOpacity: 0.2,
+  },
+  searchIcon: {
+    marginRight: spacing.sm,
   },
   input: {
     flex: 1,
-    height: 45,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    backgroundColor: '#fff',
+    fontSize: 16,
+    color: colors.textPrimary,
+    paddingVertical: spacing.sm,
   },
-  searchButton: {
-    backgroundColor: '#28a745',
-    padding: 12,
-    borderRadius: 8,
-    marginLeft: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+  clearButton: {
+    padding: spacing.xs,
+    marginLeft: spacing.sm,
   },
 });

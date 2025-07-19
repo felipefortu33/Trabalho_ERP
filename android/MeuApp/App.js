@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import AuthScreen from './src/screens/AuthScreen';
+import AuthScreen from './src/screens/AuthScreenSimple';
 import MainLayout from './src/navigation/MainLayout'; // <-- IMPORTA MainLayout
 
 const Stack = createStackNavigator();
