@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, spacing, borderRadius, shadows } from '../utils/colors';
 import AnimatedContainer from './common/AnimatedContainer';
+import Logo from './common/Logo';
 
 const Sidebar = ({ navigation, state }) => {
   const [activeRoute, setActiveRoute] = useState(state?.routeNames[state?.index] || 'Dashboard');
@@ -65,9 +66,7 @@ const Sidebar = ({ navigation, state }) => {
         style={styles.header}
       >
         <AnimatedContainer animation="fadeInUp" style={styles.headerContent}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoText}>ERP</Text>
-          </View>
+          <Logo size={64} />
           <Text style={styles.headerTitle}>Sistema de Gestão</Text>
           <Text style={styles.headerSubtitle}>Versão 1.0</Text>
         </AnimatedContainer>
@@ -131,7 +130,7 @@ const Sidebar = ({ navigation, state }) => {
             onPress={handleLogout}
             activeOpacity={0.7}
           >
-            <View style={styles.iconContainer}>
+            <View style={styles.logoutIconContainer}>
               <Ionicons name="log-out-outline" size={22} color={colors.error} />
             </View>
             <Text style={styles.logoutText}>Sair do Sistema</Text>
@@ -154,32 +153,23 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     alignItems: 'center',
-  },
-  logoContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-    ...shadows.md,
-  },
-  logoText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.primary,
+    paddingVertical: spacing.md,
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
     color: colors.textWhite,
     marginBottom: spacing.xs,
+    marginTop: spacing.md,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   headerSubtitle: {
     fontSize: 14,
     color: colors.textWhite,
-    opacity: 0.8,
+    opacity: 0.9,
+    fontWeight: '500',
   },
   menuContainer: {
     flex: 1,
@@ -192,66 +182,85 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md + 2,
     marginBottom: spacing.sm,
-    borderRadius: borderRadius.md,
+    marginHorizontal: spacing.sm,
+    borderRadius: borderRadius.lg,
     position: 'relative',
+    backgroundColor: 'rgba(0, 0, 0, 0.03)',
   },
   activeMenuItem: {
     backgroundColor: colors.primary,
-    ...shadows.sm,
+    ...shadows.md,
+    transform: [{ scale: 1.02 }],
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
+    ...shadows.sm,
   },
   activeIconContainer: {
     backgroundColor: colors.secondary,
+    ...shadows.md,
   },
   menuText: {
     fontSize: 16,
     color: colors.textPrimary,
-    fontWeight: '500',
+    fontWeight: '600',
     flex: 1,
   },
   activeMenuText: {
     color: colors.textWhite,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   activeIndicator: {
     width: 4,
-    height: 20,
+    height: 24,
     backgroundColor: colors.textWhite,
     borderRadius: 2,
     position: 'absolute',
-    right: spacing.sm,
+    right: spacing.md,
+    ...shadows.sm,
   },
   logoutContainer: {
     marginTop: 'auto',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
     borderTopWidth: 1,
     borderTopColor: colors.border,
+    backgroundColor: colors.surfaceSecondary,
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.background,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md + 2,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(239, 68, 68, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.15)',
+    ...shadows.sm,
   },
   logoutText: {
     fontSize: 16,
     color: colors.error,
-    fontWeight: '500',
+    fontWeight: '600',
     flex: 1,
+  },
+  logoutIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.md,
   },
 });
 

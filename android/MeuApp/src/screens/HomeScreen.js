@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -11,7 +11,7 @@ const HomeScreen = () => {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.openDrawer()}
+        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
       >
         <Text style={styles.buttonText}>Abrir Menu</Text>
       </TouchableOpacity>
