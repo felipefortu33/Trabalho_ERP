@@ -1,33 +1,69 @@
-// src/screens/AuthScreenSimple.js
 import React, { useState } from 'react';
 import { 
   View, 
   Text, 
-  TextInput,
-  TouchableOpacity,
   StyleSheet, 
   Alert, 
   StatusBar,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Dimensions
+  Dimensions,
+  TouchableOpacity
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../api/axiosConfig';
 import { useNavigation } from '@react-navigation/native';
+import CustomButton from '../components/common/CustomButton';
+import CustomTextInput from '../components/common/CustomTextInput';
+import Logo from '../components/common/Logo';
+import { colors, spacing, borderRadius, shadows } from '../utils/colors';
 
 const AuthScreen = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ nome: '', email: '', senha: '' });
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
+
+  const { width, height } = Dimensions.get('window');
+  const isTablet = width > 768;
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!isLogin && !formData.nome.trim()) {
+      newErrors.nome = 'Nome é obrigatório';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email é obrigatório';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email inválido';
+    }
+    
+    if (!formData.senha.trim()) {
+      newErrors.senha = 'Senha é obrigatória';
+    } else if (formData.senha.length < 6) {
+      newErrors.senha = 'Senha deve ter pelo menos 6 caracteres';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Limpar erro do campo quando usuário digitar
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
+    }
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+    
     setLoading(true);
     try {
       if (isLogin) {
@@ -56,168 +92,198 @@ const AuthScreen = () => {
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
     setFormData({ nome: '', email: '', senha: '' });
+    setErrors({});
   };
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <ScrollView 
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+      <StatusBar barStyle="dark-content" backgroundColor={colors.surface} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
       >
-        {/* Header */}
-        <View style={styles.headerSection}>
-          <Text style={styles.logoText}>ERP</Text>
-          <Text style={styles.logoSubtext}>Sistema de Gestão</Text>
-        </View>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+         
+          
 
-        {/* Form */}
-        <View style={styles.formContainer}>
-          <Text style={styles.formTitle}>
-            {isLogin ? 'Bem-vindo de volta' : 'Criar nova conta'}
-          </Text>
+          {/* Form Section */}
+          <View style={[styles.formContainer, isTablet && styles.formTablet]}>
+            <View style={[styles.headerSection, isTablet && styles.headerTablet]}>
+            <View style={styles.logoContainer}>
+              <Logo size={100} />
+            </View>
+          </View>
+            <View style={styles.formHeader}>
+              <Text style={styles.formTitle}>
+                {isLogin ? 'Bem-vindo de volta' : 'Criar nova conta'}
+              </Text>
+              <Text style={styles.formSubtitle}>
+                {isLogin 
+                  ? 'Faça login para continuar' 
+                  : 'Preencha os dados para começar'
+                }
+              </Text>
+            </View>
 
-          {!isLogin && (
-            <TextInput
-              style={styles.input}
-              placeholder="Nome completo"
-              value={formData.nome}
-              onChangeText={(text) => handleChange('nome', text)}
-              autoCapitalize="words"
-            />
-          )}
+            <View style={styles.formBody}>
+              {!isLogin && (
+                <CustomTextInput
+                  label="Nome completo"
+                  value={formData.nome}
+                  onChangeText={(text) => handleChange('nome', text)}
+                  leftIcon="person-outline"
+                  error={errors.nome}
+                  autoCapitalize="words"
+                  style={errors.nome ? styles.inputError : null}
+                />
+              )}
 
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={formData.email}
-            onChangeText={(text) => handleChange('email', text)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+              <CustomTextInput
+                placeholder="Email"
+                value={formData.email}
+                onChangeText={(text) => handleChange('email', text)}
+                leftIcon="mail-outline"
+                error={errors.email}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                style={errors.email ? styles.inputError : null}
+              />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Senha"
-            value={formData.senha}
-            onChangeText={(text) => handleChange('senha', text)}
-            secureTextEntry
-          />
+              <View style={{position: 'relative'}}>
+                <CustomTextInput
+                  placeholder={"Senha"}
+                  value={formData.senha}
+                  onChangeText={(text) => handleChange('senha', text)}
+                  leftIcon="lock-closed-outline"
+                  error={errors.senha}
+                  secureTextEntry={!showPassword}
+                  style={errors.senha ? styles.inputError : null}
+                />
+                <TouchableOpacity
+                  style={styles.showPasswordBtn}
+                  onPress={() => setShowPassword((prev) => !prev)}
+                  activeOpacity={0.7}
+                >
+                  
+                </TouchableOpacity>
+              </View>
 
-          <TouchableOpacity 
-            style={[styles.button, loading && styles.buttonDisabled]} 
-            onPress={handleSubmit}
-            disabled={loading}
-          >
-            <Text style={styles.buttonText}>
-              {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Cadastrar')}
-            </Text>
-          </TouchableOpacity>
+              <CustomButton
+                title={isLogin ? 'Entrar' : 'Cadastrar'}
+                onPress={handleSubmit}
+                loading={loading}
+                size="large"
+                style={styles.submitButton}
+              />
 
-          <TouchableOpacity onPress={toggleAuthMode} style={styles.toggleButton}>
-            <Text style={styles.toggleText}>
-              {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+              <CustomButton
+                title={isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
+                onPress={toggleAuthMode}
+                variant="ghost"
+                size="medium"
+                style={styles.toggleButton}
+                textStyle={styles.toggleText}
+              />
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 };
 
+export default AuthScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: colors.background,
+    },
+  keyboardView: {
+    flex: 1,
   },
   scrollContainer: {
     flexGrow: 1,
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 32,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
   },
   headerSection: {
     alignItems: 'center',
-    marginBottom: 48,
-    backgroundColor: '#000000',
-    padding: 32,
-    borderRadius: 24,
-    marginHorizontal: -24,
-    marginTop: -32,
+    borderRadius: borderRadius.xl,
+    marginHorizontal: -spacing.lg,
+    
   },
-  logoText: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    letterSpacing: 2,
-    marginBottom: 8,
+  headerTablet: {
+    marginBottom: spacing.xxxl * 1.5,
   },
-  logoSubtext: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    opacity: 0.8,
-    fontWeight: '300',
+  logoContainer: {
+    alignItems: 'center',
+    bottom: 10,
   },
+
+ 
+ 
+  inputError: {
+    borderColor: 'red',
+    borderWidth: 1.5,
+  },
+  showPasswordBtn: {
+    position: 'absolute',
+    right: 10,
+    top: 44, // Ajustado para evitar corte visual
+    padding: 10,
+    zIndex: 2,
+  },
+
   formContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 32,
-    shadowColor: 'rgba(0, 0, 0, 0.25)',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 8,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.xl,
+    padding: spacing.xl,
+    ...shadows.lg,
+    maxWidth: 400,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  formTablet: {
+    maxWidth: 500,
+    padding: spacing.xxxl,
+  },
+  formHeader: {
+    alignItems: 'center',
+    marginBottom: spacing.xl,
   },
   formTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 24,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
     textAlign: 'center',
   },
-  input: {
-    height: 52,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    marginBottom: 16,
+  formSubtitle: {
     fontSize: 16,
-    color: '#111827',
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
   },
-  button: {
-    backgroundColor: '#000000',
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginTop: 16,
-    marginBottom: 16,
-    alignItems: 'center',
-    shadowColor: 'rgba(0, 0, 0, 0.1)',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
+  formBody: {
+    width: '100%',
   },
-  buttonDisabled: {
-    backgroundColor: '#6B7280',
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-    fontSize: 16,
+  submitButton: {
+    marginTop: spacing.lg,
+    marginBottom: spacing.md,
   },
   toggleButton: {
-    marginTop: 8,
-    paddingVertical: 8,
+    marginTop: spacing.sm,
+    
   },
   toggleText: {
-    color: '#000000',
+    color: colors.primary,
     fontSize: 14,
-    textAlign: 'center',
   },
 });
-
-export default AuthScreen;
