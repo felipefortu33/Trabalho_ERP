@@ -1,9 +1,8 @@
 // src/components/dashboard/QuickActions.js
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import CustomButton from '../common/CustomButton';
-import { colors, spacing, borderRadius } from '../../utils/colors';
+import { colors, spacing, borderRadius, shadows } from '../../utils/colors';
 
 const QuickActions = ({ navigation, onNewOrder }) => {
   const { width } = Dimensions.get('window');
@@ -13,32 +12,62 @@ const QuickActions = ({ navigation, onNewOrder }) => {
     {
       title: 'Gerenciar Clientes',
       icon: 'people-outline',
-      action: () => navigation.navigate('Clientes'),
-      variant: 'primary',
+      action: () => {
+        try {
+          navigation.navigate('Clientes');
+        } catch (error) {
+          console.log('Erro ao navegar para Clientes:', error);
+        }
+      },
+      color: colors.info,
     },
     {
       title: 'Gerenciar Produtos',
       icon: 'cube-outline',
-      action: () => navigation.navigate('Produtos'),
-      variant: 'secondary',
+      action: () => {
+        try {
+          navigation.navigate('Produtos');
+        } catch (error) {
+          console.log('Erro ao navegar para Produtos:', error);
+        }
+      },
+      color: colors.tertiary,
     },
     {
       title: 'Ver Pedidos',
       icon: 'document-text-outline',
-      action: () => navigation.navigate('Pedidos'),
-      variant: 'outline',
+      action: () => {
+        try {
+          navigation.navigate('Pedidos');
+        } catch (error) {
+          console.log('Erro ao navegar para Pedidos:', error);
+        }
+      },
+      color: colors.success,
     },
     {
       title: 'Novo Pedido',
       icon: 'add-circle-outline',
-      action: onNewOrder,
-      variant: 'primary',
+      action: () => {
+        try {
+          if (onNewOrder) onNewOrder();
+        } catch (error) {
+          console.log('Erro ao abrir modal de novo pedido:', error);
+        }
+      },
+      color: colors.primary,
     },
     {
       title: 'Financeiro',
       icon: 'card-outline',
-      action: () => navigation.navigate('Financeiro'),
-      variant: 'outline',
+      action: () => {
+        try {
+          navigation.navigate('Financeiro');
+        } catch (error) {
+          console.log('Erro ao navegar para Financeiro:', error);
+        }
+      },
+      color: colors.warning,
     },
   ];
 
@@ -49,28 +78,25 @@ const QuickActions = ({ navigation, onNewOrder }) => {
       
       <View style={[styles.actionsGrid, isTablet && styles.actionsGridTablet]}>
         {actions.map((action, index) => (
-          <View 
-            key={action.title} 
+          <TouchableOpacity
+            key={action.title}
             style={[
-              styles.actionContainer,
-              { width: isTablet ? '32%' : '48%' }
+              styles.actionButton,
+              { 
+                width: isTablet ? '19%' : '48%',
+                backgroundColor: action.color,
+              }
             ]}
+            onPress={action.action}
+            activeOpacity={0.8}
           >
-            <CustomButton
-              title=""
-              onPress={action.action}
-              variant={action.variant}
-              style={styles.actionButton}
+            <Ionicons 
+              name={action.icon} 
+              size={28} 
+              color={colors.textWhite}
             />
-            <View style={styles.actionIconContainer}>
-              <Ionicons 
-                name={action.icon} 
-                size={28} 
-                color={action.variant === 'outline' ? colors.primary : colors.textWhite} 
-              />
-            </View>
             <Text style={styles.actionTitle}>{action.title}</Text>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     </View>
@@ -83,6 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
+    ...shadows.md,
   },
   title: {
     fontSize: 20,
@@ -103,30 +130,20 @@ const styles = StyleSheet.create({
   actionsGridTablet: {
     justifyContent: 'space-around',
   },
-  actionContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-    position: 'relative',
-  },
   actionButton: {
-    width: '100%',
-    minHeight: 80,
-    borderRadius: borderRadius.lg,
-  },
-  actionIconContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1,
+    marginBottom: spacing.lg,
+    minHeight: 80,
+    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+    ...shadows.sm,
   },
   actionTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.textPrimary,
+    color: colors.textWhite,
     textAlign: 'center',
     marginTop: spacing.sm,
     lineHeight: 16,

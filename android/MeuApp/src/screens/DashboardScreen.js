@@ -1,5 +1,5 @@
 // src/screens/DashboardScreen.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -8,7 +8,8 @@ import {
   ActivityIndicator, 
   Alert, 
   RefreshControl,
-  Dimensions
+  Dimensions,
+  BackHandler
 } from 'react-native';
 import StatCard from '../components/dashboard/StatCard';
 import RecentPedidos from '../components/dashboard/RecentPedidos';
@@ -17,7 +18,7 @@ import AddPedidoModal from '../components/pedidos/AddPedidoModal';
 import AnimatedContainer from '../components/common/AnimatedContainer';
 import api from '../api/axiosConfig';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { colors, spacing, borderRadius } from '../utils/colors';
+import { colors, spacing, borderRadius, shadows } from '../utils/colors';
 
 const DashboardScreen = () => {
   const [stats, setStats] = useState(null);
@@ -29,38 +30,115 @@ const DashboardScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
 
   const navigation = useNavigation();
-  const { width } = Dimensions.get('window');
+  const { width, height } = Dimensions.get('window');
   const isTablet = width > 768;
 
   const fetchData = async (showLoader = true) => {
     if (showLoader) setLoading(true);
     try {
-      const [statsRes, pedidosRes, clientesRes, produtosRes] = await Promise.all([
-        api.get('/dashboard/stats'),
-        api.get('/pedidos?limit=5'),
+      // Apenas as APIs que realmente existem no seu backend
+      const [
+        pedidosRes, 
+        clientesRes, 
+        produtosRes,
+        resumoFinanceiroRes
+      ] = await Promise.all([
+        api.get('/pedidos'),
         api.get('/clientes'),
         api.get('/produtos'),
+        api.get('/financeiro/resumo-financeiro').catch(() => ({ data: null })) // Opcional
       ]);
-      setStats(statsRes.data);
-      setRecentPedidos(pedidosRes.data);
-      setClientes(clientesRes.data);
-      setProdutos(produtosRes.data);
+      
+      // Calcular estatísticas baseado nos dados reais
+      const pedidos = pedidosRes.data || [];
+      const clientes = clientesRes.data || [];
+      const produtos = produtosRes.data || [];
+      const resumoFinanceiro = resumoFinanceiroRes.data;
+      
+      // Pedidos recentes (últimos 5)
+      const recentePedidos = pedidos.slice(-5).reverse();
+      
+      // Estatísticas calculadas
+      const agora = new Date();
+      const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
+      
+      const pedidosDoMes = pedidos.filter(p => 
+        new Date(p.data) >= inicioMes
+      );
+      
+      const pedidosPendentes = pedidos.filter(p => 
+        p.status?.toLowerCase() === 'pendente'
+      ).length;
+      
+      const vendasMes = pedidosDoMes.reduce((total, p) => 
+        total + (parseFloat(p.total) || 0), 0
+      );
+      
+      const statsCalculadas = {
+        totalClientes: clientes.length,
+        totalPedidos: pedidosDoMes.length,
+        totalProdutos: produtos.length,
+        vendasMes: vendasMes,
+        pedidosPendentes: pedidosPendentes,
+        ...resumoFinanceiro // Inclui dados do financeiro se disponível
+      };
+      
+      setStats(statsCalculadas);
+      setRecentPedidos(recentePedidos);
+      setClientes(clientes);
+      setProdutos(produtos);
+      
     } catch (err) {
-      Alert.alert('Erro', 'Não foi possível carregar os dados do dashboard');
-      console.error('Dashboard fetch error:', err);
+      console.log('Erro ao carregar dados:', err.message);
+      
+      // Fallback com dados básicos vazios
+      setStats({
+        totalClientes: 0,
+        totalPedidos: 0,
+        totalProdutos: 0,
+        vendasMes: 0,
+        pedidosPendentes: 0
+      });
+      setRecentPedidos([]);
+      setClientes([]);
+      setProdutos([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
-  const onRefresh = async () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchData(false);
-  };
+  }, []);
+
+  const handleStatCardPress = useCallback((screen) => {
+    navigation.navigate(screen);
+  }, [navigation]);
+
+  // Handle back button
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        Alert.alert(
+          "Sair do App",
+          "Deseja realmente sair?",
+          [
+            { text: "Cancelar", style: "cancel" },
+            { text: "Sair", onPress: () => BackHandler.exitApp() }
+          ]
+        );
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription?.remove();
+    }, [])
+  );
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       fetchData();
     }, [])
   );
@@ -95,7 +173,7 @@ const DashboardScreen = () => {
         <Text style={styles.subtitle}>Visão geral do seu negócio</Text>
       </AnimatedContainer>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Dados Reais */}
       <AnimatedContainer animation="fadeInUp" delay={200}>
         <View style={[styles.statsContainer, isTablet && styles.statsTablet]}>
           <StatCard 
@@ -103,35 +181,40 @@ const DashboardScreen = () => {
             value={stats?.totalClientes || 0} 
             color={colors.info}
             icon="people-outline"
+            onPress={() => handleStatCardPress('Clientes')}
           />
           <StatCard 
             title="Pedidos (Mês)" 
             value={stats?.totalPedidos || 0} 
             color={colors.success}
             icon="document-text-outline"
+            onPress={() => handleStatCardPress('Pedidos')}
           />
           <StatCard 
             title="Produtos" 
             value={stats?.totalProdutos || 0} 
             color={colors.tertiary}
             icon="cube-outline"
+            onPress={() => handleStatCardPress('Produtos')}
           />
           <StatCard 
             title="Vendas (Mês)" 
-            value={`R$ ${Number(stats?.vendasMes || 0).toFixed(2)}`} 
+            value={`R$ ${Number(stats?.vendasMes || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} 
             color={colors.success}
             icon="cash-outline"
+            onPress={() => handleStatCardPress('Financeiro')}
           />
           <StatCard 
             title="Pendentes" 
             value={stats?.pedidosPendentes || 0} 
-            color={colors.warning}
+            color={stats?.pedidosPendentes > 0 ? colors.warning : colors.success}
             icon="time-outline"
+            onPress={() => handleStatCardPress('Pedidos')}
           />
         </View>
       </AnimatedContainer>
 
-      {/* Recent Orders */}
+      {/* Recent Orders - Dados Reais */}
       <AnimatedContainer animation="fadeInUp" delay={400}>
         <RecentPedidos pedidos={recentPedidos} onRefresh={fetchData} />
       </AnimatedContainer>
@@ -180,6 +263,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xl,
     paddingVertical: spacing.lg,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    ...shadows.sm,
   },
   welcomeText: {
     fontSize: 16,
