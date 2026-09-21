@@ -1,0 +1,23 @@
+# Dependências
+node_modules/
+**/node_modules/
+
+# Ambiente / segredos
+.env
+*.env
+!.env.example
+
+# Build / dist
+dist/
+build/
+out/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
