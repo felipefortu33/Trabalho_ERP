@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import api from '../../../api/axiosConfig';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
@@ -13,11 +13,7 @@ const FluxoCaixa = () => {
     dayjs().endOf('month')
   ]);
 
-  useEffect(() => {
-    fetchFluxoCaixa();
-  }, []);
-
-  const fetchFluxoCaixa = async () => {
+  const fetchFluxoCaixa = useCallback(async () => {
     try {
       const [startDate, endDate] = dateRange;
       const response = await api.get('/financeiro/fluxo-caixa', {
@@ -32,11 +28,14 @@ const FluxoCaixa = () => {
       console.error('Erro ao buscar fluxo de caixa:', error);
       setLoading(false);
     }
-  };
+  }, [dateRange]);
+
+  useEffect(() => {
+    fetchFluxoCaixa();
+  }, [fetchFluxoCaixa]);
 
   const handleDateChange = (dates) => {
-    setDateRange(dates);
-    fetchFluxoCaixa();
+    if (dates) setDateRange(dates);
   };
 
   if (loading) return <div className="loading">Carregando...</div>;

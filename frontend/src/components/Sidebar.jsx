@@ -1,9 +1,8 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import './Sidebar.css';
 
 const Sidebar = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [activeItem, setActiveItem] = useState('');
 

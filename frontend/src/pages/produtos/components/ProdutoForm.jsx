@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ProdutoForm = ({ produto, setProduto, imagem, setImagem, onSubmit, onCancel }) => {
+const ProdutoForm = ({ produto, setProduto, setImagem, onSubmit, onCancel }) => {
   return (
     <form onSubmit={onSubmit}>
       <input

@@ -78,6 +78,8 @@ Backlog criado a partir da analise do estado atual do repositorio. A ordem consi
   - Centralizar estados de carregamento, vazio, erro e sucesso.
 
 - [ ] **P2.2 Frontend web**
+  - [x] Instalar dependencias declaradas e corrigir erros e warnings do lint.
+  - [x] Garantir que o build de producao seja concluido.
   - Revisar a duplicacao de layout e rotas protegidas em `App.jsx` usando um layout de rota.
   - Corrigir a identidade visual provisoria do `Topbar` e alinhar logo, navegacao e responsividade.
   - Implementar acessibilidade: foco, labels, teclado, contraste e mensagens de validacao.
