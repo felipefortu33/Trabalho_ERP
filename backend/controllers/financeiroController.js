@@ -1,4 +1,5 @@
 import db from '../config/db.js';
+import { sendInternalError } from '../middlewares/errorHandler.js';
 
 // Contas a Receber
 export const getContasReceber = async (req, res) => {
@@ -12,7 +13,7 @@ export const getContasReceber = async (req, res) => {
     `);
     res.json(contas);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar contas a receber' });
+    sendInternalError(res, error, 'Erro ao buscar contas a receber');
   }
 };
 
@@ -33,7 +34,7 @@ export const createContaReceber = async (req, res) => {
     
     res.status(201).json({ message: 'Conta a receber criada com sucesso' });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao criar conta a receber' });
+    sendInternalError(res, error, 'Erro ao criar conta a receber');
   }
 };
 
@@ -56,7 +57,7 @@ export const registrarPagamentoReceber = async (req, res) => {
     
     res.json({ message: 'Pagamento registrado com sucesso' });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao registrar pagamento' });
+    sendInternalError(res, error, 'Erro ao registrar pagamento');
   }
 };
 
@@ -66,7 +67,7 @@ export const getContasPagar = async (req, res) => {
     const [contas] = await db.execute('SELECT * FROM contas_pagar ORDER BY data_vencimento');
     res.json(contas);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar contas a pagar' });
+    sendInternalError(res, error, 'Erro ao buscar contas a pagar');
   }
 };
 
@@ -81,7 +82,7 @@ export const createContaPagar = async (req, res) => {
     
     res.status(201).json({ message: 'Conta a pagar criada com sucesso' });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao criar conta a pagar' });
+    sendInternalError(res, error, 'Erro ao criar conta a pagar');
   }
 };
 
@@ -120,8 +121,7 @@ export const registrarPagamentoPagar = async (req, res) => {
   
       res.json({ message: 'Pagamento registrado com sucesso' });
     } catch (error) {
-      console.error('❌ Erro interno em registrarPagamentoPagar:', error);
-      res.status(500).json({ error: 'Erro ao registrar pagamento', detalhe: error.message });
+      sendInternalError(res, error, 'Erro ao registrar pagamento');
     }
   };
   
@@ -144,7 +144,7 @@ export const getFluxoCaixa = async (req, res) => {
     const [fluxo] = await db.execute(query, params);
     res.json(fluxo);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar fluxo de caixa' });
+    sendInternalError(res, error, 'Erro ao buscar fluxo de caixa');
   }
 };
 
@@ -174,8 +174,7 @@ export const getResumoFinanceiro = async (req, res) => {
       });
   
     } catch (error) {
-      console.error('Erro ao gerar resumo financeiro:', error);
-      res.status(500).json({ error: 'Erro ao gerar resumo financeiro', details: error.message });
+      sendInternalError(res, error, 'Erro ao gerar resumo financeiro');
     } finally {
       conn.release();
     }

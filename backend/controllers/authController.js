@@ -2,6 +2,7 @@ import db from '../config/db.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
+import { sendInternalError } from '../middlewares/errorHandler.js';
 
 // Registro de usuário
 export const register = async (req, res) => {
@@ -14,8 +15,7 @@ export const register = async (req, res) => {
     await db.execute('INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)', [nome, email, hashedPassword]);
     res.status(201).json({ message: 'Usuário registrado com sucesso!' });
   } catch (error) {
-    console.error(error); // Log para identificar possíveis problemas
-    res.status(500).json({ error: 'Erro ao registrar usuário' });
+    sendInternalError(res, error, 'Erro ao registrar usuario');
   }
 };
 
@@ -41,7 +41,6 @@ export const login = async (req, res) => {
 
     res.json({ message: 'Login bem-sucedido', token });
   } catch (error) {
-    console.error(error); // Log para erros
-    res.status(500).json({ error: 'Erro no login' });
+    sendInternalError(res, error, 'Erro no login');
   }
 };

@@ -20,9 +20,9 @@ Backlog criado a partir da analise do estado atual do repositorio. A ordem consi
   - Criar `.env.example` para backend, frontend e mobile, sem incluir valores reais.
   - Confirmar que `.env`, dumps e credenciais nao entram no Git.
 
-- [ ] **P0.2 Validacao e tratamento de erros da API**
+- [x] **P0.2 Validacao e tratamento de erros da API**
   - [x] Adicionar validacao de body, query e parametros nas rotas de auth, clientes, produtos, pedidos e financeiro.
-  - [ ] Padronizar respostas de erro com status, codigo e mensagem segura em todos os controllers.
+  - [x] Padronizar respostas de erro com status, codigo e mensagem segura em todos os controllers.
   - [x] Adicionar middleware global de erro e evitar expor detalhes do MySQL em erros nao tratados.
   - [x] Validar o formato `Bearer <token>` antes de tentar verificar o JWT.
 

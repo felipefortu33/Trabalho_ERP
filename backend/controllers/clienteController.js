@@ -1,4 +1,5 @@
 import db from '../config/db.js';
+import { sendInternalError } from '../middlewares/errorHandler.js';
 
 export const getClientes = async (req, res) => {
   const [clientes] = await db.execute('SELECT * FROM clientes');
@@ -14,7 +15,7 @@ export const addCliente = async (req, res) => {
     );
     res.status(201).json({ message: 'Cliente cadastrado com sucesso!' });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao cadastrar cliente' });
+    sendInternalError(res, error, 'Erro ao cadastrar cliente');
   }
   
 };
@@ -35,7 +36,7 @@ export const editCliente = async (req, res) => {
 
     res.json({ message: 'Cliente atualizado com sucesso!' });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao atualizar cliente' });
+    sendInternalError(res, error, 'Erro ao atualizar cliente');
   }
 };
 
@@ -51,7 +52,7 @@ export const deleteCliente = async (req, res) => {
 
     res.json({ message: 'Cliente excluído com sucesso!' });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao excluir cliente' });
+    sendInternalError(res, error, 'Erro ao excluir cliente');
   }
 };
 
@@ -66,6 +67,6 @@ export const searchClientes = async (req, res) => {
 
     res.json(clientes);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao pesquisar clientes' });
+    sendInternalError(res, error, 'Erro ao pesquisar clientes');
   }
 };

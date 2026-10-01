@@ -1,4 +1,5 @@
 import db from '../config/db.js';
+import { sendInternalError } from '../middlewares/errorHandler.js';
 
 export const getDashboardStats = async (req, res) => {
   try {
@@ -34,7 +35,6 @@ export const getDashboardStats = async (req, res) => {
       recebimentosMes: recebimentos[0].total || 0
     });
   } catch (error) {
-    console.error('Erro ao buscar estatísticas do dashboard:', error);
-    res.status(500).json({ error: 'Erro ao carregar dados do dashboard' });
+    sendInternalError(res, error, 'Erro ao carregar dados do dashboard');
   }
 };

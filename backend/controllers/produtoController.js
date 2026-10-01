@@ -1,4 +1,5 @@
 import db from '../config/db.js';
+import { sendInternalError } from '../middlewares/errorHandler.js';
 
 // Função para buscar todos os produtos
 export const getProdutos = async (req, res) => {
@@ -6,8 +7,7 @@ export const getProdutos = async (req, res) => {
     const [produtos] = await db.execute('SELECT * FROM produtos');
     res.json(produtos);
   } catch (error) {
-    console.error('Erro ao buscar produtos:', error);
-    res.status(500).json({ error: error.message });
+    sendInternalError(res, error, 'Erro ao buscar produtos');
   }
 };
 
@@ -23,8 +23,7 @@ export const addProduto = async (req, res) => {
     );
     res.status(201).json({ message: 'Produto adicionado com sucesso!' });
   } catch (error) {
-    console.error('Erro ao adicionar produto:', error);
-    res.status(500).json({ error: error.message });
+    sendInternalError(res, error, 'Erro ao adicionar produto');
   }
 };
 
@@ -62,8 +61,7 @@ export const updateProduto = async (req, res) => {
 
     res.status(200).json({ message: "Produto atualizado com sucesso!" });
   } catch (error) {
-    console.error("Erro ao atualizar produto:", error);
-    res.status(500).json({ error: "Erro ao atualizar produto" });
+    sendInternalError(res, error, 'Erro ao atualizar produto');
   }
 };
 
@@ -85,8 +83,7 @@ export const deleteProduto = async (req, res) => {
 
     res.status(200).json({ message: 'Produto excluído com sucesso!' });
   } catch (error) {
-    console.error('Erro ao excluir produto:', error);
-    res.status(500).json({ error: error.message });
+    sendInternalError(res, error, 'Erro ao excluir produto');
   }
 };
 
@@ -101,7 +98,6 @@ export const searchProdutos = async (req, res) => {
     );
     res.json(result);
   } catch (error) {
-    console.error('Erro ao pesquisar produtos:', error);
-    res.status(500).json({ error: error.message });
+    sendInternalError(res, error, 'Erro ao pesquisar produtos');
   }
 };

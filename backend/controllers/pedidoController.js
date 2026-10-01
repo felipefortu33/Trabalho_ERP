@@ -1,4 +1,5 @@
 import db from '../config/db.js';
+import { sendInternalError } from '../middlewares/errorHandler.js';
 
 export const getPedidos = async (req, res) => {
   const conn = await db.getConnection();
@@ -50,8 +51,7 @@ export const getPedidos = async (req, res) => {
 
     res.json(pedidos);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao buscar pedidos' });
+    sendInternalError(res, error, 'Erro ao buscar pedidos');
   } finally {
     conn.release();
   }
@@ -78,8 +78,7 @@ export const addPedido = async (req, res) => {
 
     res.status(201).json({ message: 'Pedido criado com sucesso!' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao criar pedido' });
+    sendInternalError(res, error, 'Erro ao criar pedido');
   } finally {
     conn.release(); // Liberar a conexão
   }
@@ -184,11 +183,7 @@ export const updatePedido = async (req, res) => {
     });
   } catch (error) {
     await conn.rollback();
-    console.error('Erro ao atualizar pedido:', error);
-    res.status(500).json({ 
-      error: 'Erro ao atualizar pedido',
-      detalhe: error.message 
-    });
+    sendInternalError(res, error, 'Erro ao atualizar pedido');
   } finally {
     conn.release();
   }
@@ -246,15 +241,7 @@ export const deletePedido = async (req, res) => {
     });
   } catch (error) {
     await conn.rollback();
-    console.error('Erro ao deletar pedido:', {
-      pedidoId: id,
-      error: error.message,
-      stack: error.stack
-    });
-    res.status(500).json({ 
-      error: 'Erro ao deletar pedido',
-      detalhe: error.message 
-    });
+    sendInternalError(res, error, 'Erro ao deletar pedido');
   } finally {
     conn.release();
   }
@@ -295,8 +282,7 @@ export const addPedidoMultiplo = async (req, res) => {
     res.status(201).json({ message: 'Pedido múltiplo criado com sucesso', pedido_id: pedidoId });
   } catch (error) {
     await conn.rollback();
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao criar pedido múltiplo', detalhe: error.message });
+    sendInternalError(res, error, 'Erro ao criar pedido multiplo');
   } finally {
     conn.release(); // Liberar a conexão
   }
@@ -332,8 +318,7 @@ export const getPedidoById = async (req, res) => {
       produtos
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao buscar pedido' });
+    sendInternalError(res, error, 'Erro ao buscar pedido');
   } finally {
     conn.release();
   }
