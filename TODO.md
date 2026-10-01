@@ -32,9 +32,11 @@ Backlog criado a partir da analise do estado atual do repositorio. A ordem consi
   - Decidir se imagens ficam no banco, no filesystem ou em storage externo; evitar manter arquivos grandes em memoria.
 
 - [ ] **P0.4 Criar uma base minima de testes**
-  - Configurar testes de API para register/login, autenticacao, CRUD de clientes e produtos.
+  - [ ] Configurar testes de API para register/login, autenticacao, CRUD de clientes e produtos.
   - Cobrir token ausente, token invalido, payload invalido e recurso inexistente.
-  - Fazer `npm test` executar testes reais e incluir o comando no README.
+  - [x] Fazer `npm test` executar testes reais.
+  - [ ] Incluir comandos de teste e setup no README.
+  - [x] Cobrir os validadores de entrada de auth, clientes, produtos, pedidos e financeiro.
 
 ## Prioridade P1 - confiabilidade e dominio
 
