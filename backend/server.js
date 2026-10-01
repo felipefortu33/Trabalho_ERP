@@ -11,9 +11,10 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import { authenticateToken } from './middlewares/authenticateToken.js';
 import financeiroRoutes from './routes/financeiroRoutes.js';
 import setupSwagger from './swagger.js';
+import { env } from './config/env.js';
+import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json()); // Use express.json() ao invés de bodyParser.json()
@@ -28,7 +29,9 @@ app.use('/produtos', produtoRoutes);
 app.use('/pedidos', pedidoRoutes);
 app.use('/dashboard', authenticateToken, dashboardRoutes);
 app.use('/financeiro', authenticateToken, financeiroRoutes);
+app.use(notFoundHandler);
+app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+app.listen(env.port, () => {
+  console.log(`Servidor rodando na porta ${env.port}`);
 });

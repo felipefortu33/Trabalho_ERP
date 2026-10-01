@@ -1,5 +1,6 @@
 import express from 'express';
 import { register, login } from '../controllers/authController.js';
+import { validateBody, validateRegisterBody, validateAuthBody } from '../middlewares/validate.js';
 
 const router = express.Router();
 
@@ -37,9 +38,9 @@ const router = express.Router();
  */
 
 // Rota para registrar usuário
-router.post('/register', register);
+router.post('/register', validateBody(validateRegisterBody), register);
 
 // Rota para login
-router.post('/login', login);
+router.post('/login', validateBody(validateAuthBody), login);
 
 export default router;

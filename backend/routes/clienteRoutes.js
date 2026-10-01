@@ -7,6 +7,7 @@ import {
   searchClientes,
 } from '../controllers/clienteController.js';
 import { authenticateToken } from '../middlewares/authenticateToken.js';
+import { validateBody, validateClienteBody, validateIdParam, validateSearchQuery } from '../middlewares/validate.js';
 
 const router = express.Router();
 
@@ -152,9 +153,9 @@ const router = express.Router();
  */
 
 router.get('/', authenticateToken, getClientes);
-router.post('/', authenticateToken, addCliente);
-router.put('/:id', authenticateToken, editCliente);
-router.delete('/:id', authenticateToken, deleteCliente);
-router.get('/search', authenticateToken, searchClientes);
+router.get('/search', authenticateToken, validateSearchQuery, searchClientes);
+router.post('/', authenticateToken, validateBody(validateClienteBody), addCliente);
+router.put('/:id', authenticateToken, validateIdParam, validateBody(validateClienteBody), editCliente);
+router.delete('/:id', authenticateToken, validateIdParam, deleteCliente);
 
 export default router;

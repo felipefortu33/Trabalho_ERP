@@ -1,8 +1,7 @@
 import db from '../config/db.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
-const SECRET_KEY = process.env.SECRET_KEY || 'seu_segredo';
+import { env } from '../config/env.js';
 
 // Registro de usuário
 export const register = async (req, res) => {
@@ -38,7 +37,7 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, email: user.email }, env.secretKey, { expiresIn: '1h' });
 
     res.json({ message: 'Login bem-sucedido', token });
   } catch (error) {

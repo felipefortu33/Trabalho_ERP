@@ -5,7 +5,9 @@ node_modules/
 # Ambiente / segredos
 .env
 *.env
+.env.*
 !.env.example
+!.env.*.example
 
 # Build / dist
 dist/

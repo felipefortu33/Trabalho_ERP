@@ -8,6 +8,7 @@ import {
 } from '../controllers/produtoController.js';
 import { authenticateToken } from '../middlewares/authenticateToken.js';
 import upload from '../middlewares/upload.js';
+import { validateBody, validateIdParam, validateProdutoBody, validateSearchQuery } from '../middlewares/validate.js';
 
 const router = express.Router();
 
@@ -139,9 +140,9 @@ const router = express.Router();
  */
 
 router.get('/', authenticateToken, getProdutos);
-router.get('/search', authenticateToken, searchProdutos);
-router.post('/', authenticateToken, upload.single('imagem'), addProduto);
-router.put('/:id', authenticateToken, upload.single('imagem'), updateProduto);
-router.delete('/:id', authenticateToken, deleteProduto);
+router.get('/search', authenticateToken, validateSearchQuery, searchProdutos);
+router.post('/', authenticateToken, upload.single('imagem'), validateBody(validateProdutoBody), addProduto);
+router.put('/:id', authenticateToken, validateIdParam, upload.single('imagem'), validateBody(validateProdutoBody), updateProduto);
+router.delete('/:id', authenticateToken, validateIdParam, deleteProduto);
 
 export default router;
