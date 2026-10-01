@@ -8,6 +8,7 @@ import {
   getPedidoById
 } from '../controllers/pedidoController.js';
 import { authenticateToken } from '../middlewares/authenticateToken.js';
+import { validateBody, validateIdParam, validatePedidoBody, validatePedidoMultiploBody } from '../middlewares/validate.js';
 
 const router = express.Router();
 
@@ -182,10 +183,10 @@ const router = express.Router();
  */
 
 router.get('/', authenticateToken, getPedidos);
-router.post('/', authenticateToken, addPedido);
-router.put('/:id', authenticateToken, updatePedido);
-router.delete('/:id', authenticateToken, deletePedido);
-router.post('/multiplos', authenticateToken, addPedidoMultiplo);
-router.get('/:id', authenticateToken, getPedidoById);
+router.post('/', authenticateToken, validateBody(validatePedidoBody), addPedido);
+router.put('/:id', authenticateToken, validateIdParam, validateBody(validatePedidoBody), updatePedido);
+router.delete('/:id', authenticateToken, validateIdParam, deletePedido);
+router.post('/multiplos', authenticateToken, validateBody(validatePedidoMultiploBody), addPedidoMultiplo);
+router.get('/:id', authenticateToken, validateIdParam, getPedidoById);
 
 export default router;

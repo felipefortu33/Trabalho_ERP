@@ -21,14 +21,14 @@ Backlog criado a partir da analise do estado atual do repositorio. A ordem consi
   - Confirmar que `.env`, dumps e credenciais nao entram no Git.
 
 - [ ] **P0.2 Validacao e tratamento de erros da API**
-  - Adicionar validacao de body, query e parametros nas rotas de auth, clientes, produtos, pedidos e financeiro.
-  - Padronizar respostas de erro com status, codigo e mensagem segura.
-  - Adicionar middleware global de erro e evitar expor detalhes do MySQL.
-  - Validar o formato `Bearer <token>` antes de tentar verificar o JWT.
+  - [x] Adicionar validacao de body, query e parametros nas rotas de auth, clientes, produtos, pedidos e financeiro.
+  - [ ] Padronizar respostas de erro com status, codigo e mensagem segura em todos os controllers.
+  - [x] Adicionar middleware global de erro e evitar expor detalhes do MySQL em erros nao tratados.
+  - [x] Validar o formato `Bearer <token>` antes de tentar verificar o JWT.
 
 - [ ] **P0.3 Proteger uploads**
-  - Definir limite de tamanho, tipos MIME permitidos e extensoes aceitas no `multer`.
-  - Rejeitar arquivos invalidos com resposta padronizada.
+  - [x] Definir limite de tamanho, tipos MIME permitidos e extensoes aceitas no `multer`.
+  - [x] Rejeitar arquivos invalidos com resposta padronizada.
   - Decidir se imagens ficam no banco, no filesystem ou em storage externo; evitar manter arquivos grandes em memoria.
 
 - [ ] **P0.4 Criar uma base minima de testes**

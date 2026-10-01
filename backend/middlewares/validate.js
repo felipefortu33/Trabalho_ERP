@@ -101,3 +101,98 @@ export const validateProdutoBody = (body) => {
 
   return errors;
 };
+
+const isPositiveInteger = (value) => Number.isInteger(Number(value)) && Number(value) > 0;
+
+const isValidDate = (value) => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value));
+
+export const validatePedidoBody = (body) => {
+  const errors = [];
+
+  if (!isPositiveInteger(body.cliente_id)) {
+    errors.push({ field: 'cliente_id', message: 'Informe um cliente valido' });
+  }
+
+  if (!isPositiveInteger(body.produto_id)) {
+    errors.push({ field: 'produto_id', message: 'Informe um produto valido' });
+  }
+
+  if (!isPositiveInteger(body.quantidade)) {
+    errors.push({ field: 'quantidade', message: 'A quantidade deve ser maior que zero' });
+  }
+
+  return errors;
+};
+
+export const validatePedidoMultiploBody = (body) => {
+  const errors = [];
+
+  if (!isPositiveInteger(body.cliente_id)) {
+    errors.push({ field: 'cliente_id', message: 'Informe um cliente valido' });
+  }
+
+  if (!Array.isArray(body.produtos) || body.produtos.length === 0) {
+    errors.push({ field: 'produtos', message: 'Informe pelo menos um produto' });
+    return errors;
+  }
+
+  body.produtos.forEach((produto, index) => {
+    if (!isPositiveInteger(produto.produto_id)) {
+      errors.push({ field: `produtos[${index}].produto_id`, message: 'Informe um produto valido' });
+    }
+
+    if (!isPositiveInteger(produto.quantidade)) {
+      errors.push({ field: `produtos[${index}].quantidade`, message: 'A quantidade deve ser maior que zero' });
+    }
+  });
+
+  return errors;
+};
+
+export const validateContaReceberBody = (body) => {
+  const errors = [];
+
+  if (body.pedido_id !== undefined && body.pedido_id !== '' && !isPositiveInteger(body.pedido_id)) {
+    errors.push({ field: 'pedido_id', message: 'Informe um pedido valido' });
+  }
+
+  if (!isPositiveInteger(body.cliente_id)) {
+    errors.push({ field: 'cliente_id', message: 'Informe um cliente valido' });
+  }
+
+  if (!Number.isFinite(Number(body.valor)) || Number(body.valor) <= 0) {
+    errors.push({ field: 'valor', message: 'Informe um valor maior que zero' });
+  }
+
+  if (!isValidDate(body.data_vencimento)) {
+    errors.push({ field: 'data_vencimento', message: 'Informe uma data de vencimento valida' });
+  }
+
+  return errors;
+};
+
+export const validateContaPagarBody = (body) => {
+  const errors = [];
+
+  if (typeof body.descricao !== 'string' || body.descricao.trim().length < 2) {
+    errors.push({ field: 'descricao', message: 'Informe uma descricao' });
+  }
+
+  if (!Number.isFinite(Number(body.valor)) || Number(body.valor) <= 0) {
+    errors.push({ field: 'valor', message: 'Informe um valor maior que zero' });
+  }
+
+  if (!isValidDate(body.data_vencimento)) {
+    errors.push({ field: 'data_vencimento', message: 'Informe uma data de vencimento valida' });
+  }
+
+  return errors;
+};
+
+export const validatePagamentoBody = (body) => {
+  if (!isValidDate(body.data_pagamento)) {
+    return [{ field: 'data_pagamento', message: 'Informe uma data de pagamento valida' }];
+  }
+
+  return [];
+};

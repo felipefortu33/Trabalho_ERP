@@ -9,6 +9,7 @@ import {
   getFluxoCaixa,
   getResumoFinanceiro
 } from '../controllers/financeiroController.js';
+import { validateBody, validateContaPagarBody, validateContaReceberBody, validateIdParam, validatePagamentoBody } from '../middlewares/validate.js';
 
 const router = Router();
 
@@ -158,12 +159,12 @@ const router = Router();
  */
 
 router.get('/contas-receber', getContasReceber);
-router.post('/contas-receber', createContaReceber);
-router.post('/contas-receber/:id/pagar', registrarPagamentoReceber);
+router.post('/contas-receber', validateBody(validateContaReceberBody), createContaReceber);
+router.post('/contas-receber/:id/pagar', validateIdParam, validateBody(validatePagamentoBody), registrarPagamentoReceber);
 
 router.get('/contas-pagar', getContasPagar);
-router.post('/contas-pagar', createContaPagar);
-router.post('/contas-pagar/:id/pagar', registrarPagamentoPagar);
+router.post('/contas-pagar', validateBody(validateContaPagarBody), createContaPagar);
+router.post('/contas-pagar/:id/pagar', validateIdParam, validateBody(validatePagamentoBody), registrarPagamentoPagar);
 
 router.get('/fluxo-caixa', getFluxoCaixa);
 router.get('/resumo-financeiro', getResumoFinanceiro);
