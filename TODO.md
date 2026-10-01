@@ -35,8 +35,9 @@ Backlog criado a partir da analise do estado atual do repositorio. A ordem consi
   - [ ] Configurar testes de API para register/login, autenticacao, CRUD de clientes e produtos.
   - Cobrir token ausente, token invalido, payload invalido e recurso inexistente.
   - [x] Fazer `npm test` executar testes reais.
-  - [ ] Incluir comandos de teste e setup no README.
+  - [x] Incluir comandos de teste e setup no README.
   - [x] Cobrir os validadores de entrada de auth, clientes, produtos, pedidos e financeiro.
+  - [x] Cobrir respostas HTTP de login invalido, rota protegida e rota inexistente.
 
 ## Prioridade P1 - confiabilidade e dominio
 
