@@ -106,7 +106,8 @@ Backlog criado a partir da analise do estado atual do repositorio. A ordem consi
 - [ ] **P3.3 Entrega e qualidade continua**
   - Criar pipeline CI para lint, testes, build do frontend e verificacao das dependencias.
   - Adicionar testes de componente e fluxos E2E para login, cliente, produto e pedido.
-  - Configurar analise de vulnerabilidades e atualizacao controlada de dependencias.
+  - [x] Configurar analise de vulnerabilidades e atualizar dependencias diretas vulneraveis do backend.
+  - [ ] Investigar vulnerabilidades transitivas restantes reportadas pelo `npm audit` local.
   - Documentar setup local, variaveis, banco, comandos e processo de release.
 
 ## Primeira sequencia recomendada
