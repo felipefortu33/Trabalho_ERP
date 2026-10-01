@@ -38,6 +38,7 @@ Backlog criado a partir da analise do estado atual do repositorio. A ordem consi
   - [x] Incluir comandos de teste e setup no README.
   - [x] Cobrir os validadores de entrada de auth, clientes, produtos, pedidos e financeiro.
   - [x] Cobrir respostas HTTP de login invalido, rota protegida e rota inexistente.
+  - [x] Cobrir payloads invalidos em rotas protegidas de clientes, pedidos e financeiro.
 
 ## Prioridade P1 - confiabilidade e dominio
 
