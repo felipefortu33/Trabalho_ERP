@@ -26,14 +26,14 @@ Backlog criado a partir da analise do estado atual do repositorio. A ordem consi
   - [x] Adicionar middleware global de erro e evitar expor detalhes do MySQL em erros nao tratados.
   - [x] Validar o formato `Bearer <token>` antes de tentar verificar o JWT.
 
-- [ ] **P0.3 Proteger uploads**
+- [x] **P0.3 Proteger uploads**
   - [x] Definir limite de tamanho, tipos MIME permitidos e extensoes aceitas no `multer`.
   - [x] Rejeitar arquivos invalidos com resposta padronizada.
-  - Decidir se imagens ficam no banco, no filesystem ou em storage externo; evitar manter arquivos grandes em memoria.
+  - Imagens ficam no filesystem local, com URL relativa persistida no banco; storage externo deve ser avaliado antes de escalar horizontalmente.
 
-- [ ] **P0.4 Criar uma base minima de testes**
-  - [ ] Configurar testes de API para register/login, autenticacao, CRUD de clientes e produtos.
-  - Cobrir token ausente, token invalido, payload invalido e recurso inexistente.
+- [x] **P0.4 Criar uma base minima de testes**
+  - [x] Configurar testes de API para register/login, autenticacao, CRUD de clientes e produtos.
+  - [x] Cobrir token ausente, token invalido, payload invalido e recurso inexistente.
   - [x] Fazer `npm test` executar testes reais.
   - [x] Incluir comandos de teste e setup no README.
   - [x] Cobrir os validadores de entrada de auth, clientes, produtos, pedidos e financeiro.

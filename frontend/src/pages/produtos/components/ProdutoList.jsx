@@ -1,6 +1,12 @@
 import React from 'react';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
+const getImageUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith('data:') || url.startsWith('http')) return url;
+  return `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${url}`;
+};
+
 const ProdutoList = ({ produtos, handleEdit, handleDelete }) => {
   return (
     <div className="produtos-table-container">
@@ -29,7 +35,7 @@ const ProdutoList = ({ produtos, handleEdit, handleDelete }) => {
                 <td>{produto.estoque}</td>
                 <td>
                   {produto.url && (
-                    <img src={`data:image/jpeg;base64,${produto.url}`} alt={produto.nome} width="250" />
+                    <img src={getImageUrl(produto.url)} alt={produto.nome} width="250" />
                   )}
                 </td>
                 <td>

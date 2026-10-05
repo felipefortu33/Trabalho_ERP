@@ -1,7 +1,23 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import multer from 'multer';
 
-// Configuração do multer para upload de imagem
-const storage = multer.memoryStorage();  // Armazena a imagem na memória
+export const uploadsDirectory = path.resolve(process.cwd(), 'uploads');
+fs.mkdirSync(uploadsDirectory, { recursive: true });
+
+const extensionsByMimeType = {
+	'image/jpeg': '.jpg',
+	'image/png': '.png',
+	'image/webp': '.webp',
+};
+
+const storage = multer.diskStorage({
+	destination: uploadsDirectory,
+	filename: (req, file, callback) => {
+		const extension = extensionsByMimeType[file.mimetype];
+		callback(null, `${Date.now()}-${crypto.randomUUID()}${extension}`);
+	},
+});
 
 const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
@@ -22,6 +38,19 @@ const upload = multer({
 	},
 });
 
+export const getUploadedFileUrl = (file) => (file ? `/uploads/${file.filename}` : null);
 
+export const removeUploadedFile = async (fileUrl) => {
+	if (!fileUrl || !fileUrl.startsWith('/uploads/')) return;
+
+	const filePath = path.resolve(uploadsDirectory, path.basename(fileUrl));
+	if (path.dirname(filePath) !== uploadsDirectory) return;
+
+	try {
+		await fs.promises.unlink(filePath);
+	} catch (error) {
+		if (error.code !== 'ENOENT') throw error;
+	}
+};
 
 export default upload;
