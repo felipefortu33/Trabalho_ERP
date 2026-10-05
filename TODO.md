@@ -49,9 +49,9 @@ Backlog criado a partir da analise do estado atual do repositorio. A ordem consi
   - Revisar duplicidade entre `contas_receber`, `fluxo_caixa`, `transacoes` e `receitas`.
 
 - [ ] **P1.2 Regras de pedidos e estoque**
-  - Implementar transacao SQL para criar pedido, itens e baixa de estoque.
-  - Impedir estoque negativo e dupla baixa quando o pedido for atualizado.
-  - Validar transicoes de status e registrar data/historico da alteracao.
+  - [x] Implementar transacao SQL para criar pedido, itens e baixa de estoque.
+  - [x] Impedir estoque negativo e dupla baixa quando o pedido for atualizado.
+  - [ ] Validar transicoes de status e registrar data/historico da alteracao.
   - Calcular totais no backend, sem confiar em valores enviados pelo cliente.
 
 - [ ] **P1.3 Autorizacao e ciclo de sessao**

@@ -60,34 +60,51 @@ export const getPedidos = async (req, res) => {
 
 export const addPedido = async (req, res) => {
   const { cliente_id, produto_id, quantidade, status } = req.body;
-  const data = new Date();
 
   const conn = await db.getConnection();
+  await conn.beginTransaction();
+
   try {
-    const [produto] = await conn.execute('SELECT estoque FROM produtos WHERE id = ?', [produto_id]);
-    if (produto[0].estoque < quantidade) {
+    const [[produto]] = await conn.execute(
+      'SELECT estoque FROM produtos WHERE id = ? FOR UPDATE',
+      [produto_id]
+    );
+    if (!produto) {
+      await conn.rollback();
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    if (produto.estoque < quantidade) {
+      await conn.rollback();
       return res.status(400).json({ error: 'Estoque insuficiente para o pedido' });
     }
 
-    await conn.execute(
-      'INSERT INTO pedidos (cliente_id, produto_id, data, quantidade, status) VALUES (?, ?, ?, ?, ?)', 
-      [cliente_id, produto_id, data, quantidade, status || 'Pendente']
+    const [pedidoResult] = await conn.execute(
+      'INSERT INTO pedidos (cliente_id, status, estoque_baixado) VALUES (?, ?, TRUE)',
+      [cliente_id, status || 'Pendente']
     );
-    
-    await conn.execute('UPDATE produtos SET estoque = estoque - ? WHERE id = ?', [quantidade, produto_id]);
+    await conn.execute(
+      'INSERT INTO pedido_produtos (pedido_id, produto_id, quantidade) VALUES (?, ?, ?)',
+      [pedidoResult.insertId, produto_id, quantidade]
+    );
+    await conn.execute(
+      'UPDATE produtos SET estoque = estoque - ? WHERE id = ?',
+      [quantidade, produto_id]
+    );
 
+    await conn.commit();
     res.status(201).json({ message: 'Pedido criado com sucesso!' });
   } catch (error) {
+    await conn.rollback();
     sendInternalError(res, error, 'Erro ao criar pedido');
   } finally {
-    conn.release(); // Liberar a conexão
+    conn.release();
   }
 };
 
 export const updatePedido = async (req, res) => {
   const { id } = req.params;
-  console.log('Requisição recebida no updatePedido:', req.body);
-  const { cliente_id, status, produto_id, quantidade, atualizacao_completa } = req.body;
+  const { cliente_id, status } = req.body;
 
   const conn = await db.getConnection();
   await conn.beginTransaction();
@@ -96,6 +113,7 @@ export const updatePedido = async (req, res) => {
     // 1. Verificar se o pedido existe
     const [[pedidoAtual]] = await conn.execute('SELECT * FROM pedidos WHERE id = ?', [id]);
     if (!pedidoAtual) {
+      await conn.rollback();
       return res.status(404).json({ error: 'Pedido não encontrado' });
     }
 
@@ -130,7 +148,10 @@ export const updatePedido = async (req, res) => {
         [id]
       );
 
-      // 4. Registrar receita apenas se ainda não foi integrada
+    }
+
+    if (status === 'Concluído') {
+      // Registrar receita apenas se ainda não foi integrada.
       const [[jaRegistrado]] = await conn.execute(
         'SELECT 1 FROM receitas WHERE pedido_id = ? LIMIT 1',
         [id]
@@ -150,14 +171,10 @@ export const updatePedido = async (req, res) => {
           'INSERT INTO receitas (pedido_id, valor) VALUES (?, ?)',
           [id, totalPedido]
         );
-
-        await conn.execute(
-          'UPDATE pedidos SET financeiro_integrado = TRUE WHERE id = ?',
-          [id]
-        );
       }
+    }
 
-    } else if (['Cancelado', 'Pendente'].includes(status) && pedidoAtual.estoque_baixado) {
+    if (['Cancelado', 'Pendente'].includes(status) && pedidoAtual.estoque_baixado) {
       const [produtosPedido] = await conn.execute(
         'SELECT produto_id, quantidade FROM pedido_produtos WHERE pedido_id = ?',
         [id]
@@ -200,11 +217,12 @@ export const deletePedido = async (req, res) => {
   try {
     // 1. Verificar se o pedido existe e obter seu status
     const [[pedido]] = await conn.execute(
-      'SELECT id, status FROM pedidos WHERE id = ?', 
+      'SELECT id, status, estoque_baixado FROM pedidos WHERE id = ?',
       [id]
     );
     
     if (!pedido) {
+      await conn.rollback();
       return res.status(404).json({ error: 'Pedido não encontrado' });
     }
 
@@ -221,7 +239,7 @@ export const deletePedido = async (req, res) => {
     await conn.execute('DELETE FROM pedidos WHERE id = ?', [id]);
 
     // 5. Restaurar estoque APENAS se o status for Pendente ou Cancelado
-    const deveRestaurarEstoque = ['Pendente', 'Cancelado'].includes(pedido.status);
+    const deveRestaurarEstoque = Boolean(pedido.estoque_baixado);
 
     if (deveRestaurarEstoque && produtosPedido.length > 0) {
       for (const item of produtosPedido) {
@@ -230,7 +248,6 @@ export const deletePedido = async (req, res) => {
           [item.quantidade, item.produto_id]
         );
       }
-      console.log(`Estoque restaurado para ${produtosPedido.length} produtos do pedido ${id}`);
     }
 
     await conn.commit();
@@ -258,13 +275,19 @@ export const addPedidoMultiplo = async (req, res) => {
   await conn.beginTransaction();
 
   try {
-    const [pedidoResult] = await conn.query('INSERT INTO pedidos (cliente_id) VALUES (?)', [cliente_id]);
+    const [pedidoResult] = await conn.query(
+      'INSERT INTO pedidos (cliente_id, estoque_baixado) VALUES (?, TRUE)',
+      [cliente_id]
+    );
     const pedidoId = pedidoResult.insertId;
 
     for (const item of produtos) {
       const { produto_id, quantidade } = item;
 
-      const [[produto]] = await conn.query('SELECT estoque FROM produtos WHERE id = ?', [produto_id]);
+      const [[produto]] = await conn.query(
+        'SELECT estoque FROM produtos WHERE id = ? FOR UPDATE',
+        [produto_id]
+      );
 
       if (!produto) {
         throw new Error(`Produto ${produto_id} não encontrado`);
@@ -275,7 +298,13 @@ export const addPedidoMultiplo = async (req, res) => {
       }
 
       await conn.query('INSERT INTO pedido_produtos (pedido_id, produto_id, quantidade) VALUES (?, ?, ?)', [pedidoId, produto_id, quantidade]);
-      await conn.query('UPDATE produtos SET estoque = estoque - ? WHERE id = ?', [quantidade, produto_id]);
+      const [updateResult] = await conn.query(
+        'UPDATE produtos SET estoque = estoque - ? WHERE id = ? AND estoque >= ?',
+        [quantidade, produto_id, quantidade]
+      );
+      if (updateResult.affectedRows !== 1) {
+        throw new Error(`Estoque insuficiente para o produto ${produto_id}`);
+      }
     }
 
     await conn.commit();
