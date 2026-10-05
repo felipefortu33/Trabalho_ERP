@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
+    "migrate": "node --input-type=module -e \"import('./db/migrate.js').then(({ runMigrations }) => runMigrations())\"",
     "start": "node server.js"
   },
   "keywords": [],

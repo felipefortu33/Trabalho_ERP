@@ -8,7 +8,8 @@ const pool = mysql.createPool({
   database: env.dbName,
   waitForConnections: true,
   connectionLimit: 10, // Pode ajustar conforme o número de conexões simultâneas esperadas
-  queueLimit: 0
+  queueLimit: 0,
+  multipleStatements: true,
 });
 
 export default pool;

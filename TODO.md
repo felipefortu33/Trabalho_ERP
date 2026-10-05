@@ -43,9 +43,9 @@ Backlog criado a partir da analise do estado atual do repositorio. A ordem consi
 ## Prioridade P1 - confiabilidade e dominio
 
 - [ ] **P1.1 Organizar banco e migrations**
-  - Substituir `createTables.js` como mecanismo principal por migrations versionadas.
-  - Adicionar indices para emails, buscas, chaves estrangeiras e campos usados em filtros.
-  - Definir `NOT NULL`, `CHECK` e regras de exclusao para pedidos, itens e financeiro.
+  - [x] Substituir `createTables.js` como mecanismo principal por migrations versionadas.
+  - [x] Adicionar indices para emails, buscas, chaves estrangeiras e campos usados em filtros.
+  - [x] Definir `NOT NULL`, `CHECK` e regras de exclusao para pedidos, itens e financeiro.
   - Revisar duplicidade entre `contas_receber`, `fluxo_caixa`, `transacoes` e `receitas`.
 
 - [ ] **P1.2 Regras de pedidos e estoque**
