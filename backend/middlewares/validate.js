@@ -91,6 +91,14 @@ export const validateProdutoBody = (body) => {
     errors.push({ field: 'nome', message: 'Informe um nome com pelo menos 2 caracteres' });
   }
 
+  if (typeof body.descricao !== 'string' || body.descricao.trim().length < 1) {
+    errors.push({ field: 'descricao', message: 'Informe uma descricao' });
+  }
+
+  if (typeof body.categoria !== 'string' || body.categoria.trim().length < 1) {
+    errors.push({ field: 'categoria', message: 'Informe uma categoria' });
+  }
+
   if (!Number.isFinite(preco) || preco < 0) {
     errors.push({ field: 'preco', message: 'Informe um preco valido' });
   }

@@ -34,11 +34,6 @@ export const updateProduto = async (req, res) => {
   const { id } = req.params;
   const { nome, descricao, categoria, preco, estoque } = req.body;
 
-  // Validação dos campos obrigatórios
-  if (!nome || !descricao || !categoria || preco === undefined || estoque === undefined) {
-    return res.status(400).json({ error: "Campos obrigatórios estão faltando" });
-  }
-
   try {
     const [produtos] = await db.execute('SELECT url FROM produtos WHERE id = ?', [id]);
     if (produtos.length === 0) {

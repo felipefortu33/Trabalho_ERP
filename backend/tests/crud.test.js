@@ -168,6 +168,8 @@ test('executa CRUD de produtos autenticado', async () => {
 
     const createForm = new FormData();
     createForm.set('nome', 'Novo Produto');
+    createForm.set('descricao', 'Descricao do produto');
+    createForm.set('categoria', 'Categoria');
     createForm.set('preco', '12.50');
     createForm.set('estoque', '4');
     const createResponse = await fetch(`${baseUrl}/produtos`, {

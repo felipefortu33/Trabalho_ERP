@@ -23,8 +23,18 @@ test('aceita login valido', () => {
 
 test('valida cliente e produto', () => {
   assert.deepEqual(validateClienteBody({ nome: 'Cliente Teste', email: 'user@example.com' }), []);
-  assert.deepEqual(validateProdutoBody({ nome: 'Produto Teste', preco: '10.50', estoque: '3' }), []);
-  assert.equal(validateProdutoBody({ nome: '', preco: '-1', estoque: '1.5' }).length, 3);
+  assert.deepEqual(validateProdutoBody({
+    nome: 'Produto Teste',
+    descricao: 'Descricao do produto',
+    categoria: 'Categoria',
+    preco: '10.50',
+    estoque: '3',
+  }), []);
+  assert.deepEqual(
+    validateProdutoBody({ nome: '', descricao: '', categoria: '', preco: '-1', estoque: '1.5' })
+      .map(({ field }) => field),
+    ['nome', 'descricao', 'categoria', 'preco', 'estoque'],
+  );
 });
 
 test('valida pedido com multiplos produtos', () => {
