@@ -6,10 +6,12 @@ import {
   validateContaPagarBody,
   validateContaReceberBody,
   validatePagamentoBody,
+  validatePedidoBody,
   validatePedidoMultiploBody,
   validateProdutoBody,
   validateRegisterBody,
 } from '../middlewares/validate.js';
+import { isPedidoStatusTransitionAllowed } from '../controllers/pedidoController.js';
 
 test('rejeita cadastro com nome, email e senha invalidos', () => {
   const errors = validateRegisterBody({ nome: 'A', email: 'invalido', senha: '123' });
@@ -43,6 +45,24 @@ test('valida pedido com multiplos produtos', () => {
     produtos: [{ produto_id: '2', quantidade: '3' }],
   }), []);
   assert.equal(validatePedidoMultiploBody({ cliente_id: '', produtos: [] }).length, 2);
+});
+
+test('rejeita status de pedido desconhecido', () => {
+  const errors = validatePedidoBody({
+    cliente_id: '1',
+    produto_id: '2',
+    quantidade: '1',
+    status: 'Em análise',
+  });
+
+  assert.deepEqual(errors.map(({ field }) => field), ['status']);
+});
+
+test('permite apenas transicoes de status conhecidas', () => {
+  assert.equal(isPedidoStatusTransitionAllowed('Pendente', 'Concluído'), true);
+  assert.equal(isPedidoStatusTransitionAllowed('Concluído', 'Pendente'), true);
+  assert.equal(isPedidoStatusTransitionAllowed('Pendente', 'Em análise'), false);
+  assert.equal(isPedidoStatusTransitionAllowed('Inexistente', 'Pendente'), false);
 });
 
 test('valida contas e pagamentos financeiros', () => {

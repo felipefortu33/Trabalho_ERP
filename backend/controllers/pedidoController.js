@@ -1,6 +1,15 @@
 import db from '../config/db.js';
 import { sendInternalError } from '../middlewares/errorHandler.js';
 
+const statusTransitions = {
+  Pendente: new Set(['Pendente', 'Concluído', 'Cancelado']),
+  'Concluído': new Set(['Concluído', 'Pendente', 'Cancelado']),
+  Cancelado: new Set(['Cancelado', 'Pendente', 'Concluído']),
+};
+
+export const isPedidoStatusTransitionAllowed = (currentStatus, nextStatus) =>
+  statusTransitions[currentStatus]?.has(nextStatus) ?? false;
+
 export const getPedidos = async (req, res) => {
   const conn = await db.getConnection();
   try {
@@ -117,14 +126,24 @@ export const updatePedido = async (req, res) => {
       return res.status(404).json({ error: 'Pedido não encontrado' });
     }
 
+    const nextStatus = status ?? pedidoAtual.status;
+    if (!isPedidoStatusTransitionAllowed(pedidoAtual.status, nextStatus)) {
+      await conn.rollback();
+      return res.status(400).json({
+        status: 400,
+        code: 'INVALID_STATUS_TRANSITION',
+        message: `Nao e possivel alterar o pedido de ${pedidoAtual.status} para ${nextStatus}`,
+      });
+    }
+
     // 2. Atualizar informações básicas do pedido
     await conn.execute(
       'UPDATE pedidos SET cliente_id = ?, status = ? WHERE id = ?',
-      [cliente_id, status, id]
+      [cliente_id, nextStatus, id]
     );
 
     // 3. Lógica de atualização de estoque baseada no status
-    if (status === 'Concluído' && !pedidoAtual.estoque_baixado) {
+    if (nextStatus === 'Concluído' && !pedidoAtual.estoque_baixado) {
       const [produtosPedido] = await conn.execute(
         'SELECT produto_id, quantidade FROM pedido_produtos WHERE pedido_id = ?',
         [id]
@@ -150,7 +169,7 @@ export const updatePedido = async (req, res) => {
 
     }
 
-    if (status === 'Concluído') {
+    if (nextStatus === 'Concluído') {
       // Registrar receita apenas se ainda não foi integrada.
       const [[jaRegistrado]] = await conn.execute(
         'SELECT 1 FROM receitas WHERE pedido_id = ? LIMIT 1',
@@ -174,7 +193,7 @@ export const updatePedido = async (req, res) => {
       }
     }
 
-    if (['Cancelado', 'Pendente'].includes(status) && pedidoAtual.estoque_baixado) {
+    if (['Cancelado', 'Pendente'].includes(nextStatus) && pedidoAtual.estoque_baixado) {
       const [produtosPedido] = await conn.execute(
         'SELECT produto_id, quantidade FROM pedido_produtos WHERE pedido_id = ?',
         [id]
@@ -190,6 +209,15 @@ export const updatePedido = async (req, res) => {
       await conn.execute(
         'UPDATE pedidos SET estoque_baixado = FALSE WHERE id = ?',
         [id]
+      );
+    }
+
+    if (pedidoAtual.status !== nextStatus) {
+      await conn.execute(
+        `INSERT INTO pedido_status_historico
+          (pedido_id, status_anterior, status_novo, alterado_por)
+         VALUES (?, ?, ?, ?)`,
+        [id, pedidoAtual.status, nextStatus, req.user?.id ?? null]
       );
     }
 

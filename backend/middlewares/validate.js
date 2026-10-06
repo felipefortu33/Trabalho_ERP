@@ -116,6 +116,7 @@ const isValidDate = (value) => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$
 
 export const validatePedidoBody = (body) => {
   const errors = [];
+  const statusPermitidos = new Set(['Pendente', 'Concluído', 'Cancelado']);
 
   if (!isPositiveInteger(body.cliente_id)) {
     errors.push({ field: 'cliente_id', message: 'Informe um cliente valido' });
@@ -127,6 +128,10 @@ export const validatePedidoBody = (body) => {
 
   if (!isPositiveInteger(body.quantidade)) {
     errors.push({ field: 'quantidade', message: 'A quantidade deve ser maior que zero' });
+  }
+
+  if (body.status !== undefined && !statusPermitidos.has(body.status)) {
+    errors.push({ field: 'status', message: 'Informe um status de pedido valido' });
   }
 
   return errors;
